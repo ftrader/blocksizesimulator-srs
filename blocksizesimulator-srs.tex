@@ -120,7 +120,7 @@ intended to provide information on the following observables:
 \begin{itemize}
 \item response characteristics of various dynamic blocksize algorithms
 \item induced transaction delays in face of full blocks (whether from legit or spam traffic)
-\item mempool desynchronization
+\item memory pool (mempool) desynchronization
 \item network splits
 \item node downtime (both service and mining)
 \item upgrade feasibility
@@ -203,7 +203,9 @@ The software is stand-alone and uses OS facilities for console and file I/O.
 No other software interfaces are planned.
 
 \subsection{Scenario Files}
-To be decided (TBD)
+It is determined they will exist, but:
+
+Precise structure: To be decided (TBD)
 
 \subsection{Blocksize algorithms}
 To be specified as an interface which has to be implemented for a node.
@@ -218,12 +220,112 @@ None.
 
 \chapter{System Features}
 
+This section describes the main features of the simulation and lists the
+functional requirements associated with them.
 
-\section{Feature: Scenarios}
+
+\section{Feature: Network}
+
+\subsection{Priority}
+
+High
+
 
 \subsection{Description}
 
-A scenario defines all the inputs for a simulation run.
+The simulation requires modeling of a network layer on which
+transactions and blocks are transported.
+
+
+\subsection{Stimulus/Response Sequences}
+
+Traffic generators create transactions which are relayed to all nodes.
+
+Mining nodes create blocks which are relayed to all other nodes (mining, service and generic).
+
+Propagation time of transactions and blocks is not modeled (at least, initially).
+
+That means blocks and transactions take only the minimum amount of time (1 second) to
+reach other entities in the simulation.
+
+
+\subsection{Functional Requirements}
+
+
+\subsubsection{BLOCKSIM-NETWORK-REQ-1}
+
+Any transactions added to the network by traffic generators at a specific time step shall be inserted into the receive
+queue of all nodes at the next simulation time step.
+
+\subsubsection{BLOCKSIM-NETWORK-REQ-2}
+
+Any block added to the network by a mining node at a specific time step shall be inserted into the receive
+queue of all other nodes at the next simulation time step.
+
+
+
+\section{Feature: Time}
+
+\subsection{Priority}
+
+High
+
+
+\subsection{Description}
+
+The simulation requires modeling of time (for example w.r.t. the
+processing of blocks by nodes).
+
+Certain attributes of simulation entities such as rates of transactions
+created by traffic generators, or processing units required by a node
+to validate a transaction or block, may be specified most naturally in terms
+of some units per time.
+
+Traffic generators will generate transactions to be inserted at a given time
+in the simulation (which depends on each generator's characteristics).
+
+Miners will stochastically generate blocks (provided they have transactions
+in their mempool). Once a miner finds a block, it adds that block onto
+the network immediately.
+
+
+\subsection{Stimulus/Response Sequences}
+
+The smallest time unit of the simulator will be fixed.
+
+
+\subsection{Functional Requirements}
+
+
+\subsubsection{BLOCKSIM-TIME-REQ-1}
+
+The smallest time unit in the simulation will be one (1) second.
+
+\subsubsection{BLOCKSIM-TIME-REQ-2}
+
+The starting time of the simulation will be referred to as time zero
+(t=0), all future events will have an integer simulation time > 0
+assigned to them.
+
+Events described in scenarios must be expressed in terms of this
+simulation time.
+
+Events which occur before the simulation start (e.g. pre-existing blocks
+which as part of initial conditions) shall have negative integer simulation
+times assigned to them (e.g. t=-1, t=-43, etc.)
+
+
+\section{Feature: Scenarios}
+
+\subsection{Priority}
+
+High
+
+
+\subsection{Description}
+
+A scenario completely defines all the inputs for a simulation run.
+
 It may be specified in one single file or a collection of files (TBD),
 but in either case there shall be one single file that acts as the
 main starting point to provide the input data used in a simulator run.
@@ -232,11 +334,6 @@ Some example scenario files can be provided with the base simulator.
 
 Editing scenario files is outside the scope of this SRS. As they will be pure
 text files, it can be left to the user and their favorite text editor.
-
-
-\subsection{Priority}
-
-High
 
 
 \subsection{Stimulus/Response Sequences}
@@ -253,34 +350,142 @@ will run, otherwise the simulator should exit with appropriate error messages.
 \subsection{Functional Requirements}
 
 
-\subsubsection{SCENARIO-REQ-1}
+\subsubsection{BLOCKSIM-SCENARIO-REQ-1}
 
 The simulator shall read in the scenario file provided on the command line and
 automatically process any dependencies (further included scenario files).
 
 
-\subsubsection{SCENARIO-REQ-2}
+\subsubsection{BLOCKSIM-SCENARIO-REQ-2}
 
 The simulator shall abort if any required input information is missing or
 invalid after processing the scenario file(s).
 
-\subsubsection{SCENARIO-REQ-3}
+\subsubsection{BLOCKSIM-SCENARIO-REQ-3}
 Any missing/invalid scenario information shall be listed to the user to enable
 them to adequately configure the scenario.
 
 
-\section{System Feature 2 (and so on)}
+\subsubsection{BLOCKSIM-SCENARIO-REQ-4}
+Input data items specified by scenario shall be as follows
+(the list below should be complete):
+
+\begin{enumerate}
+\item Default number of simulation steps (blocks) to run. This may be overridden by a command line parameter.
+\item Blocksize algorithm to use in nodes (this also defines the `hard' max blocksize for a node)
+\item Definition of the node population
+   \begin{enumerate}
+   \item Number of mining nodes
+   \item Number of service nodes
+   \item Number of generic nodes (optional - generic nodes would be non-mining, non-service nodes)
+   \item Default node mempool size (in bytes)
+   \end{enumerate}
+\item Definition of the mining nodes
+\item Definition of the service nodes
+\item Definition of the traffic generators (these are not nodes, but sources which inject transactions traffic into the simulation)
+   \begin{enumerate}
+   \item sources of `legit' transactions
+   \item sources of `spam' transactions
+   \end{enumerate}
+\end{enumerate}
+
+
+\section{Feature: Node class}
+\subsection{Priority}
+
+High
+
+\subsection{Description}
+
+The node class provides the base from which all node types in the
+system (i.e. mining, service, generic nodes) are derived.
+
+
+\subsection{Stimulus/Response Sequences}
+
+After the scenario has been read and validated, the simulator will
+instantiate node objects of the specified types before starting the
+simulation.
+
+Specialized node types may override some of the resource attributes
+of the node base class.
+
+Node objects maintain their own mempool and view of the blockchain history,
+and receive transactions (from traffic generators) and blocks (from miners)
+for processing.
+
+If their resources are exceeded during simulated operation, nodes
+become unavailable (`downtime`) and may require simulated maintenance (TBD).
+
+Blocks that have been stuck on a Poison block for too long must be able to
+fall back to processing another legitimate block instead.
+
+
+\subsection{Functional Requirements}
+
+
+\subsubsection{BLOCKSIM-NODEBASE-REQ-1}
+
+Nodes shall maintain their own mempool containing transactions already seen
+but not removed by a block in the node's active blockchain history.
+
+\subsubsection{BLOCKSIM-NODEBASE-REQ-2}
+
+Nodes shall maintain their own history of the blockchain, as a list of
+linked blocks which the node has been able to `validate`.
+
+\subsubsection{BLOCKSIM-NODEBASE-REQ-3}
+
+Nodes shall have an overrideable attribute which defines a processing rate
+at which they are able to validate blocks.
+
+This rate may be defined in terms of some unit (e.g. some `cycles` or `ops`)
+used by blocks to specify their validation cost.
+
+\subsubsection{BLOCKSIM-NODEBASE-REQ-4}
+
+Nodes shall maintain a queue for blocks received from miners but not
+yet validated.
+
+NOTE: this may include both reasonably sized blocks, and `poison blocks`
+which are blocks whose validation may not be reasonably achieved by a
+node within a 10 minute timeframe.
+
+\subsubsection{BLOCKSIM-NODEBASE-REQ-5}
+
+If a node is unable to process a `poison block` within a simulated
+time of 10 minutes, it shall fall back to validating other received
+non-poison blocks.
+
+(TODO: should a node who hasn't mined a block be able to tell before
+processing whether a block is poisonous or not?)
+
+
+\section{Feature: Mining nodes}
+
+\section{Feature: Service nodes}
+
+\section{Feature: Generic nodes}
+
+\section{Feature: Transactions}
+
+\section{Feature: Blocks}
+
+\section{Feature: Traffic generators}
+
+\section{Feature: Node upgrades}
 
 
 \chapter{Other Nonfunctional Requirements}
 
 \section{Performance Requirements}
-$<$If there are performance requirements for the product under various
-circumstances, state them here and explain their rationale, to help the
-developers understand the intent and make suitable design choices. Specify the
-timing relationships for real time systems. Make such requirements as specific
-as possible. You may need to state performance requirements for individual
-functional requirements or features.$>$
+TBD
+
+Should be described in terms of feasible network sizes of interest (up to 2000 nodes?),
+realistic mempool capacity distributions, transaction generation rates and simulation
+time ranges possible on a reasonably modern multi-core PC with disk and memory specs,
+available to COTS hardware.
+
 
 \section{Safety Requirements}
 None.
