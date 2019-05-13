@@ -1,6 +1,6 @@
 (Work in progress)
 
-This is a Software Requirement for a simulator to
+This is a Software Requirement Specification for a simulator to
 assess dynamic blocksize algorithms on Bitcoin Cash.
 
 To build PDF from .tex on Debian:
