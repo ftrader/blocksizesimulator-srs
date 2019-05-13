@@ -1,6 +1,6 @@
 all:
-	xelatex srs.tex
-	xelatex srs.tex
+	xelatex blocksizesimulator-srs.tex
+	xelatex blocksizesimulator-srs.tex
 	$(MAKE) clean
 
 clean:

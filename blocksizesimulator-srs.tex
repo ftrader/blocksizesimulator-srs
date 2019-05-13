@@ -144,12 +144,15 @@ outside of the simulator project.
 
 
 \section{Product Functions}
-$<$Summarize the major functions the product must perform or must let the user 
-perform. Details will be provided in Section 3, so only a high level summary 
-(such as a bullet list) is needed here. Organize the functions to make them 
-understandable to any reader of the SRS. A picture of the major groups of 
-related requirements and how they relate, such as a top level data flow diagram 
-or object class diagram, is often effective.$>$
+Basic description of the main functions:
+\begin{itemize}  
+\item Interpret command line arguments provided by user to start a simulation run
+\item Read scenario inputs from user-provided text files
+\item Optionally, generate a block history as initial condition for the simulation 
+\item Run the network simulation for n blocks, optionally outputting traces to console or log file
+\item Stop and output simulation results (to console or disk)
+\end{itemize}
+
 
 
 \section{User Classes and Characteristics}
@@ -184,8 +187,9 @@ TBC
 \chapter{External Interface Requirements}
 
 \section{User Interfaces}
-Initially, the simulator user interface will be via command line input output and text files
-read from and/or written to disk.
+Initially, the simulator user interface will be text console driven with input
+provided by command line and configuration text files, and output written to
+console and/or disk.
  
 \section{Hardware Interfaces}
 None.
@@ -195,6 +199,15 @@ The software is stand-alone and uses OS facilities for console and file I/O.
 
 No other software interfaces are planned.
 
+\subsection{Scenario Files}
+To be decided (TBD)
+
+\subsection{Blocksize algorithms}
+To be specified as a Python interface which has to be implemented for a node.
+It will have access to the node's view of the blockchain in order to make
+its calculations based on past block sizes.
+
+The same algorithm will be used by all the nodes in a simulation run.
 
 \section{Communications Interfaces}
 None.
