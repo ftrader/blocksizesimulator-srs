@@ -274,6 +274,15 @@ This setting shall have no default - the simulator shall abort prior
 to starting and complain if no block height at which to stop has been
 specified in the scenario or on the command line.
 
+\subsubsection{BLOCKSIM-GENERAL-REQ-3 (accounting unit)}
+
+Certain entities in the simulation need to account economically for
+their actions.
+
+This applies at minimum to poison block spammers, mining and service nodes.
+
+For these calculations, the simulation shall use a fictional unit of account:
+the Sim Dollar, amounts of which are denoted in output by a preceding dollar sign.
 
 
 \section{Feature: Network}
@@ -485,6 +494,17 @@ entering a node's mempool is not modeled explicitly.
 
 \subsection{Functional Requirements}
 
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-0 (node type identifier)}
+
+Each nodes shall be identified by an attribute as one of the following types:
+
+\begin{itemize}
+   \item mining node
+   \item service node
+   \item generic node
+\end{itemize}
+
+
 
 \subsubsection{BLOCKSIM-NODE-BASE-REQ-1 (mempool per node)}
 
@@ -541,6 +561,13 @@ it shall abort the processing of that block.
 NOTE: This applies particular to `poison block` processing, and models
 at cut-off time at which a node gives up on validating such a block.
 
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-8 (node mempool cap must $>$ node max blocksize)}
+
+A node's configured mempool capacity shall exceed the configured
+maximum blocksize that can be processed by the node, otherwise a fatal
+misconfiguration error shall be reported and the simulation aborted.
+
+
 
 \section{Feature: Mining nodes}
 
@@ -551,7 +578,13 @@ High
 \subsection{Description}
 
 Mining nodes are derived from generic nodes. They inherit all the
-attributes, but have the additional capability to produce blocks.
+attributes and behaviors except as defined by the additional functional
+requirements below.
+
+The main additional capability is to produce blocks.
+
+These blocks also generate revenue for the mining node by way of the
+fees from transactions in a mined block.
 
 
 \subsection{Stimulus/Response Sequences}
@@ -586,7 +619,22 @@ TBD
 
 \subsection{Description}
 
-$<$Insert feature description$>$
+Service nodes are used to model economic service providers, and thus
+are simulated with a focus on measuring cost of downtime and feasibility
+of upgrades, similar to mining nodes, despite service nodes not generating
+any blocks.
+
+Service nodes generate revenue which is accounted, modeled as a function of
+`legit` transactions they successfully process.
+
+NOTE: The revenue/cost calculation formulas are elaborated in the functional
+requirements of this feature section.
+
+This includes both validated transactions accepted into mempool as well as
+the transactions in blocks.
+
+Service nodes also accrue maintenance costs, modeled as a function of certain
+capacities of the node over time.
 
 
 \subsection{Stimulus/Response Sequences}
@@ -596,9 +644,14 @@ $<$Insert known stimuli/responses$>$
 
 \subsection{Functional Requirements}
 
-\subsubsection{BLOCKSIM-NODE-SERVICE-REQ-1 (short title)}
+\subsubsection{BLOCKSIM-NODE-SERVICE-REQ-1 (revenue formula)}
 
-$<$Insert requirement text$>$
+TBD
+
+
+\subsubsection{BLOCKSIM-NODE-SERVICE-REQ-2 (cost of maintenance formula)}
+
+TBD
 
 
 
@@ -606,16 +659,29 @@ $<$Insert requirement text$>$
 
 \subsection{Priority}
 
-TBD
+Low
 
 \subsection{Description}
 
-$<$Insert feature description$>$
+Generic nodes are neither mining nor economic nodes, and are modeled
+after relay nodes which have no specific purpose.
+
+Simulating them may not be particularly useful, but might give some
+insight at what level of network utilization the low-spec nodes will
+drop out.
 
 
 \subsection{Stimulus/Response Sequences}
 
-$<$Insert known stimuli/responses$>$
+Generic nodes process incoming transactions and blocks as they are
+produced.
+
+They do not need revenue / cost of maintenance accounting.
+
+The statistics tracked are inherited from the base node class.
+
+Also, the basic node rules for processing blocks and for dropping out due to
+exceeded mempool capacity apply.
 
 
 \subsection{Functional Requirements}
