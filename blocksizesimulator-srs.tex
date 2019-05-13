@@ -224,6 +224,58 @@ This section describes the main features of the simulation and lists the
 functional requirements associated with them.
 
 
+
+\section{Feature: General}
+
+\subsection{Priority}
+
+High
+
+\subsection{Description}
+
+This section describes general requirements which are not related to
+specific features.
+
+
+\subsection{Stimulus/Response Sequences}
+
+The simulation runs must be deterministic to allow reproduction.
+
+As some random processes are modeled, a random number generator must be
+initialized with a seed that is made known to the user.
+
+A specific seed can also be provided by the user as part of the scenario
+(optionally overriden via command line to simplify repeat trials of the
+a particular scenario under randomness).
+
+
+\subsection{Functional Requirements}
+
+
+\subsubsection{BLOCKSIM-GENERAL-REQ-1 (RNG seed)}
+
+The simulation shall initialize a random number generator (RNG) with a seed
+provided by the user in the scenario or on the command line.
+
+If no seed is provided, a seed will be generated from some local machine
+parameters and the epoch time, and the seed will be printed to allow
+a re-run by the user.
+
+\subsubsection{BLOCKSIM-GENERAL-REQ-2 (termination condition)}
+
+The simulation shall terminate once a block of specified height has been
+evaluated by each node.
+
+Example: stop once all nodes have processed 10,000 blocks.
+
+Once the simulator stops, it outputs some statistics (see Output feature).
+
+This setting shall have no default - the simulator shall abort prior
+to starting and complain if no block height at which to stop has been
+specified in the scenario or on the command line.
+
+
+
 \section{Feature: Network}
 
 \subsection{Priority}
@@ -252,15 +304,15 @@ reach other entities in the simulation.
 \subsection{Functional Requirements}
 
 
-\subsubsection{BLOCKSIM-NETWORK-REQ-1}
+\subsubsection{BLOCKSIM-NETWORK-REQ-1 (instantaneous transaction dissemination)}
 
 Any transactions added to the network by traffic generators at a specific time step shall be inserted into the receive
-queue of all nodes at the next simulation time step.
+queue of all nodes instantaneously (at the current simulation time step).
 
-\subsubsection{BLOCKSIM-NETWORK-REQ-2}
+\subsubsection{BLOCKSIM-NETWORK-REQ-2 (instantaneous block dissemination)}
 
 Any block added to the network by a mining node at a specific time step shall be inserted into the receive
-queue of all other nodes at the next simulation time step.
+queue of all other nodes instantaneously (at the current simulation time step).
 
 
 
@@ -297,11 +349,11 @@ The smallest time unit of the simulator will be fixed.
 \subsection{Functional Requirements}
 
 
-\subsubsection{BLOCKSIM-TIME-REQ-1}
+\subsubsection{BLOCKSIM-TIME-REQ-1 (simulation time unit)}
 
 The smallest time unit in the simulation will be one (1) second.
 
-\subsubsection{BLOCKSIM-TIME-REQ-2}
+\subsubsection{BLOCKSIM-TIME-REQ-2 (meaning of negative/positive and zero sim times}
 
 The starting time of the simulation will be referred to as time zero
 (t=0), all future events will have an integer simulation time > 0
@@ -313,6 +365,7 @@ simulation time.
 Events which occur before the simulation start (e.g. pre-existing blocks
 which as part of initial conditions) shall have negative integer simulation
 times assigned to them (e.g. t=-1, t=-43, etc.)
+
 
 
 \section{Feature: Scenarios}
@@ -350,28 +403,31 @@ will run, otherwise the simulator should exit with appropriate error messages.
 \subsection{Functional Requirements}
 
 
-\subsubsection{BLOCKSIM-SCENARIO-REQ-1}
+\subsubsection{BLOCKSIM-SCENARIO-REQ-1 (starting scenario file)}
 
 The simulator shall read in the scenario file provided on the command line and
 automatically process any dependencies (further included scenario files).
 
 
-\subsubsection{BLOCKSIM-SCENARIO-REQ-2}
+\subsubsection{BLOCKSIM-SCENARIO-REQ-2 (abort if invalid/incomplete scenario handling)}
 
 The simulator shall abort if any required input information is missing or
 invalid after processing the scenario file(s).
 
-\subsubsection{BLOCKSIM-SCENARIO-REQ-3}
+\subsubsection{BLOCKSIM-SCENARIO-REQ-3 (inform which data is invalid/incomplete)}
 Any missing/invalid scenario information shall be listed to the user to enable
 them to adequately configure the scenario.
 
 
-\subsubsection{BLOCKSIM-SCENARIO-REQ-4}
+\subsubsection{BLOCKSIM-SCENARIO-REQ-4 (list of scenario data items)}
 Input data items specified by scenario shall be as follows
 (the list below should be complete):
 
+TODO: some may be optional - need to describe better
+
 \begin{enumerate}
-\item Default number of simulation steps (blocks) to run. This may be overridden by a command line parameter.
+\item Seed for RNG initialization. This may be overridden by a command line parameter.
+\item block height at which to terminate the simulation. This may be overridden by a command line parameter.
 \item Blocksize algorithm to use in nodes (this also defines the `hard' max blocksize for a node)
 \item Definition of the node population
    \begin{enumerate}
@@ -388,6 +444,7 @@ Input data items specified by scenario shall be as follows
    \item sources of `spam' transactions
    \end{enumerate}
 \end{enumerate}
+
 
 
 \section{Feature: Node class}
@@ -417,24 +474,30 @@ for processing.
 If their resources are exceeded during simulated operation, nodes
 become unavailable (`downtime`) and may require simulated maintenance (TBD).
 
+The transactions in received blocks must be entered into the node's mempool
+before the block can be processed.
+
 Blocks that have been stuck on a Poison block for too long must be able to
 fall back to processing another legitimate block instead.
 
+Validation time of received transactions (as opposed to blocks) before
+entering a node's mempool is not modeled explicitly.
 
 \subsection{Functional Requirements}
 
 
-\subsubsection{BLOCKSIM-NODEBASE-REQ-1}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-1 (mempool per node}
 
 Nodes shall maintain their own mempool containing transactions already seen
 but not removed by a block in the node's active blockchain history.
 
-\subsubsection{BLOCKSIM-NODEBASE-REQ-2}
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-2 (blockchain history per node)}
 
 Nodes shall maintain their own history of the blockchain, as a list of
 linked blocks which the node has been able to `validate`.
 
-\subsubsection{BLOCKSIM-NODEBASE-REQ-3}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-3 (validation rate per node)}
 
 Nodes shall have an overrideable attribute which defines a processing rate
 at which they are able to validate blocks.
@@ -442,7 +505,7 @@ at which they are able to validate blocks.
 This rate may be defined in terms of some unit (e.g. some `cycles` or `ops`)
 used by blocks to specify their validation cost.
 
-\subsubsection{BLOCKSIM-NODEBASE-REQ-4}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-4 (input queue for blocks)}
 
 Nodes shall maintain a queue for blocks received from miners but not
 yet validated.
@@ -451,17 +514,69 @@ NOTE: this may include both reasonably sized blocks, and `poison blocks`
 which are blocks whose validation may not be reasonably achieved by a
 node within a 10 minute timeframe.
 
-\subsubsection{BLOCKSIM-NODEBASE-REQ-5}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-5 (nodes validate blocks in parallel}
 
-If a node is unable to process a `poison block` within a simulated
-time of 10 minutes, it shall fall back to validating other received
-non-poison blocks.
+Nodes shall validate received blocks in parallel according to their
+configured validation rates and the validation cost of each block.
 
-(TODO: should a node who hasn't mined a block be able to tell before
-processing whether a block is poisonous or not?)
+Such validation is subject to mempool constraints.
+
+Once a node has validated a block at a given height, it aborts validation
+of other candidate blocks for the same height.
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-6 (mempool space required for block validation}
+
+Validation is subject to mempool constraints.
+Transactions not already received into the mempool (e.g. those in a `poison block`)
+must be entered into node mempool before the block can be validated.
+
+NOTE: as per general node requirements, if the mempool capacity is reached
+the node is considered to have gone down (into maintenance).
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-7 (abort blocks > 10 minutes}
+
+If a node is unable to process a block within a simulation time of 10 minutes,
+it shall abort the processing of that block.
+
+NOTE: This applies particular to `poison block` processing, and models
+at cut-off time at which a node gives up on validating such a block.
 
 
 \section{Feature: Mining nodes}
+
+\subsection{Priority}
+
+High
+
+\subsection{Description}
+
+Mining nodes are derived from generic nodes. They inherit all the
+attributes, but have the additional capability to produce blocks.
+
+
+\subsection{Stimulus/Response Sequences}
+
+As a simplification, hashpower and difficulty are not modeled, therefore
+all mining nodes that are not `down' will have an equal chance of finding
+the next block (hashpower of all nodes is assumed equal, and difficulty
+is assumed such that the next block will be found on average within 10
+minutes).
+
+
+\subsection{Functional Requirements}
+
+
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-1 (nodes hash at equal rates)}
+
+At the initialization of the simulation run, each mining node shall be
+assigned a `hashpower` fraction equivalent to 1/M where M is the total number
+of mining nodes specified (and active) at the start.
+
+NOTE: This ensures that each node has an equal chance of producing
+the next block and allows mining of regular blocks to slow down as the
+network may be impeded by adversarial action that impact mining nodes.
+The difficulty adjustment which would compensate a loss of hashpower
+in such a case, is not modeled.
 
 \section{Feature: Service nodes}
 
@@ -474,6 +589,46 @@ processing whether a block is poisonous or not?)
 \section{Feature: Traffic generators}
 
 \section{Feature: Node upgrades}
+
+\section{Feature: Outputs}
+
+\subsection{Priority}
+
+High
+
+
+\subsection{Description}
+
+The simulation requires output of runtime traces (for troubleshooting or
+self tests) and some collected and aggregated data (for user evaluation of
+simulator scenario results).
+
+
+\subsection{Stimulus/Response Sequences}
+
+Some of the output events are triggered during the simulation, but the
+main output
+
+
+\subsection{Functional Requirements}
+
+
+\subsubsection{BLOCKSIM-OUTPUTS-REQ-1 (list of output statistics)}
+
+After the simulation has concluded, the following statistics shall be output
+to the user:
+
+\begin{enumerate}
+\item Remaining mining nodes
+\item Remaining service nodes
+\item Aggregate delay for "legit" transactions: # transaction x number of blocks before inclusion
+\item Aggregate time where > 50% mempool is desynchronized
+\item Cost incurred by spammer
+\item Cost incurred by Poison blockers: if block is orphaned, assume the entire block reward is razed for the attacker
+\item Maximum numbers of blocks that are re-organized during the simulation
+\item Total upgrade cost
+\item Total revenue
+\end{enumerate}
 
 
 \chapter{Other Non-functional Requirements}
@@ -530,5 +685,14 @@ diagrams.$>$
 \section{Appendix C: To Be Determined List}
 $<$Collect a numbered list of the TBD (to be determined) references that remain
 in the SRS so they can be tracked to closure.$>$
+
+\section{Appendix D: To Do List}
+This is a list of changes that still need to be taken into account in
+future iterations of this specification.
+
+\begin{itemize}
+   \item TODO
+\end{itemize}
+
 
 \end{document}
