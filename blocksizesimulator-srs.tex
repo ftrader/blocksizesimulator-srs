@@ -353,7 +353,7 @@ The smallest time unit of the simulator will be fixed.
 
 The smallest time unit in the simulation will be one (1) second.
 
-\subsubsection{BLOCKSIM-TIME-REQ-2 (meaning of negative/positive and zero sim times}
+\subsubsection{BLOCKSIM-TIME-REQ-2 (meaning of negative/positive and zero sim times)}
 
 The starting time of the simulation will be referred to as time zero
 (t=0), all future events will have an integer simulation time > 0
@@ -486,7 +486,7 @@ entering a node's mempool is not modeled explicitly.
 \subsection{Functional Requirements}
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-1 (mempool per node}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-1 (mempool per node)}
 
 Nodes shall maintain their own mempool containing transactions already seen
 but not removed by a block in the node's active blockchain history.
@@ -514,7 +514,7 @@ NOTE: this may include both reasonably sized blocks, and `poison blocks`
 which are blocks whose validation may not be reasonably achieved by a
 node within a 10 minute timeframe.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-5 (nodes validate blocks in parallel}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-5 (nodes validate blocks in parallel)}
 
 Nodes shall validate received blocks in parallel according to their
 configured validation rates and the validation cost of each block.
@@ -524,7 +524,7 @@ Such validation is subject to mempool constraints.
 Once a node has validated a block at a given height, it aborts validation
 of other candidate blocks for the same height.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-6 (mempool space required for block validation}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-6 (mempool space required for block validation)}
 
 Validation is subject to mempool constraints.
 Transactions not already received into the mempool (e.g. those in a `poison block`)
@@ -533,7 +533,7 @@ must be entered into node mempool before the block can be validated.
 NOTE: as per general node requirements, if the mempool capacity is reached
 the node is considered to have gone down (into maintenance).
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-7 (abort blocks > 10 minutes}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-7 (abort blocks > 10 minutes)}
 
 If a node is unable to process a block within a simulation time of 10 minutes,
 it shall abort the processing of that block.
