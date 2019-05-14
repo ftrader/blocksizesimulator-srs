@@ -644,6 +644,19 @@ NOTE: a soft cap of 0 means fill to the hard cap.
 A mining node shall not discriminate between `legit' and `spam' transactions
 when filling a block.
 
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-6 (minfee for mining)}
+
+Transaction which do not carry a minimum fee rates as expected by a mining
+node shall not mined by that mining node.
+
+
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-6 (drop arriving below minfee txs)}
+
+Transactions that arrive outside of a mined block and carrying a fee below
+the minfee of a mining node shall not be entered into its mempool.
+
+For the purpose of the simulation they can be considered `dropped'.
+
 
 \section{Feature: Service nodes}
 
@@ -735,6 +748,11 @@ $<$Insert requirement text$>$
 High
 
 \subsection{Description}
+
+Transactions are modeled in a simplified way, without inputs/outputs.
+
+Transactions have a size and associated fee (collected by the miner).
+
 
 Two kinds of transactions will be simulated:
 
