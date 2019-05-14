@@ -907,7 +907,19 @@ If any of these parameters are configured, they must all be configured.
 There are no default values.
 
 
-\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-3 (generated transaction type)}
+\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-3 (background and spike traffic rates of increase)}
+
+A traffic generator shall have configuration parameters for the rates
+of increase, over time, of its background and spike transaction levels.
+
+These shall be positive real numbers value expressing increase in
+transactions per second per second.
+
+The increase shall only apply to the spike peak level and not the duration or
+any other time-related parameters.
+
+
+\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-4 (generated transaction type)}
 
 A traffic generator shall have a configuration parameter to
 identify the type of transactions it generates as either `legit' or `spam'.
