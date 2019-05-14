@@ -450,6 +450,7 @@ TODO: some may be optional - need to describe better
    \item Number of service nodes
    \item Number of generic nodes (optional - generic nodes would be non-mining, non-service nodes)
    \item Default node mempool size (in bytes)
+   \item Node interuption tolerance threshold (in seconds). If the period where a node drops out exceeds a tolerance threshold, the node is removed from the network permanently.
    \end{enumerate}
 \item Definition of the mining nodes
 \item Definition of the service nodes
@@ -486,8 +487,8 @@ Node objects maintain their own mempool and view of the blockchain history,
 and receive transactions (from traffic generators) and blocks (from miners)
 for processing.
 
-If their resources are exceeded during simulated operation, nodes
-become unavailable (`downtime`) and may require simulated maintenance (TBD).
+If their resources or limits are exceeded during simulated operation, nodes
+can become unavailable (`downtime`) and may require simulated maintenance (TBD).
 
 The transactions in received blocks must be entered into the node's mempool
 before the block can be processed.
@@ -505,11 +506,11 @@ entering a node's mempool is not modeled explicitly.
 Each nodes shall be identified by an attribute as one of the following types:
 
 \begin{itemize}
-   \item mining node
+   \item regular mining node
+   \item poison mining node
    \item service node
    \item generic node
 \end{itemize}
-
 
 
 \subsubsection{BLOCKSIM-NODE-BASE-REQ-1 (mempool per node)}
@@ -523,6 +524,7 @@ but not removed by a block in the node's active blockchain history.
 Nodes shall maintain their own history of the blockchain, as a list of
 linked blocks which the node has been able to `validate`.
 
+
 \subsubsection{BLOCKSIM-NODE-BASE-REQ-3 (validation rate per node)}
 
 Nodes shall have an overrideable attribute which defines a processing rate
@@ -531,16 +533,31 @@ at which they are able to validate blocks.
 This rate may be defined in terms of some unit (e.g. some `cycles` or `ops`)
 used by blocks to specify their validation cost.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-4 (input queue for blocks)}
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-4 (maximum processable regular block size)}
+
+Nodes shall have an overrideable attribute which defines a maximum processable
+block size (in bytes) for regular blocks.
+
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-5 (maximum processable poison block size)}
+
+Nodes shall have an overrideable attribute which defines a maximum processable
+block size (in bytes) for poison blocks. Its value must be greater than or
+equal the maximum size of regular blocks.
+
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-6 (input queue for blocks)}
 
 Nodes shall maintain a queue for blocks received from miners but not
 yet validated.
 
-NOTE: this may include both reasonably sized blocks, and `poison blocks`
-which are blocks whose validation may not be reasonably achieved by a
-node within a 10 minute timeframe.
+NOTE: This is necessary because nodes have to process the blockchain
+sequentially, but may be receiving blocks of later from miners while they
+are still processing earlier blocks.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-5 (nodes validate blocks in parallel)}
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-7 (parallel validation of same-height blocks)}
 
 Nodes shall validate received blocks in parallel according to their
 configured validation rates and the validation cost of each block.
@@ -550,7 +567,8 @@ Such validation is subject to mempool constraints.
 Once a node has validated a block at a given height, it aborts validation
 of other candidate blocks for the same height.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-6 (mempool space required for block validation)}
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-8 (mempool space required for block validation)}
 
 Validation is subject to mempool constraints.
 Transactions not already received into the mempool (e.g. those in a `poison block`)
@@ -559,19 +577,68 @@ must be entered into node mempool before the block can be validated.
 NOTE: as per general node requirements, if the mempool capacity is reached
 the node is considered to have gone down (into maintenance).
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-7 (abort blocks $>$ 10 minutes)}
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-9 (parameter to dropout when time exceeded)}
+
+A node's definition shall include a boolean configuration parameter which
+controls whether it drops into maintenance if a block's validation time exceeds 10 minutes.
+
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-10 (action if block validation $>$ 10 minutes)}
 
 If a node is unable to process a block within a simulation time of 10 minutes,
-it shall abort the processing of that block.
+it shall, depending on the aforementioned  boolean configuration parameter,
+either abort the processing of the block and carry on processing alternative
+candidates, or drop out.
 
-NOTE: This applies particular to `poison block` processing, and models
-at cut-off time at which a node gives up on validating such a block.
+NOTE: This allows modeling a node `giving up' on a `poison block` after a
+cut-off period, or go down entirely if the node gets stuck forever or crashes
+on such a block.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-8 (node mempool cap must $>$ node max blocksize)}
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-11 (node mempool cap must $>$ node max blocksize)}
 
 A node's configured mempool capacity shall exceed the configured
 maximum blocksize that can be processed by the node, otherwise a fatal
 misconfiguration error shall be reported and the simulation aborted.
+
+
+
+\section{Feature: Generic nodes}
+
+\subsection{Priority}
+
+Low
+
+\subsection{Description}
+
+Generic nodes are neither mining nor economic nodes, and are modeled
+after relay nodes which have no specific purpose.
+
+Simulating them may not be particularly useful, but might give some
+insight at what level of network utilization the low-spec nodes will
+drop out.
+
+
+\subsection{Stimulus/Response Sequences}
+
+Generic nodes process incoming transactions and blocks as they are
+produced.
+
+They do not need revenue / cost of maintenance accounting.
+
+The statistics tracked are inherited from the base node class.
+
+Also, the basic node rules for processing blocks and for dropping out due to
+exceeded mempool capacity apply.
+
+
+\subsection{Functional Requirements}
+
+\subsubsection{BLOCKSIM-NODE-GENERIC-REQ-1 (short title)}
+
+$<$Insert requirement text$>$
+
 
 
 
@@ -739,41 +806,6 @@ TBD
 TBD
 
 
-
-\section{Feature: Generic nodes}
-
-\subsection{Priority}
-
-Low
-
-\subsection{Description}
-
-Generic nodes are neither mining nor economic nodes, and are modeled
-after relay nodes which have no specific purpose.
-
-Simulating them may not be particularly useful, but might give some
-insight at what level of network utilization the low-spec nodes will
-drop out.
-
-
-\subsection{Stimulus/Response Sequences}
-
-Generic nodes process incoming transactions and blocks as they are
-produced.
-
-They do not need revenue / cost of maintenance accounting.
-
-The statistics tracked are inherited from the base node class.
-
-Also, the basic node rules for processing blocks and for dropping out due to
-exceeded mempool capacity apply.
-
-
-\subsection{Functional Requirements}
-
-\subsubsection{BLOCKSIM-NODE-GENERIC-REQ-1 (short title)}
-
-$<$Insert requirement text$>$
 
 
 
@@ -1072,7 +1104,7 @@ This is a list of changes that still need to be taken into account in
 future iterations of this specification.
 
 \begin{itemize}
-   \item TODO
+   \item (Update feature) Upgrade interval: Interval where node operator periodically considers upgrade if they forsee a need to upgrade. Node operators will only upgrade if 1) current revenue > cost and 2) after upgrade, revenue also > cost. Node operators will upgrade if number of legit + spam transactions are going up at the time of evaluation (consideration period?), and will upgrade to a capacity where they forsee to be enough until the next evaluation.
 \end{itemize}
 
 
