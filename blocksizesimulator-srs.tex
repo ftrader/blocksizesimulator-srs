@@ -617,6 +617,7 @@ network may be impeded by adversarial action that impact mining nodes.
 The difficulty adjustment which would compensate a loss of hashpower
 in such a case, is not modeled.
 
+
 \subsubsection{BLOCKSIM-NODE-MINING-REQ-2 (mining node soft cap)}
 
 Mining nodes will have a `soft cap' attribute configured by default to
@@ -629,7 +630,16 @@ by the mining node.
 A value of zero (0) for `soft cap' parameter shall mean that the mining
 node can produce blocks as big as its its hard limit.
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-4 (traffic agnostic)}
+
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-4 (fill to soft cap unless zero)}
+
+A mining node will attempt to fit in as many transactions from its mempool
+as possible without exceeding its soft cap if that is zero.
+
+NOTE: a soft cap of 0 means fill to the hard cap.
+
+
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-5 (traffic agnostic)}
 
 A mining node shall not discriminate between `legit' and `spam' transactions
 when filling a block.
@@ -782,26 +792,45 @@ $<$Insert requirement text$>$
 
 \subsection{Priority}
 
-TBD
+High
 
 \subsection{Description}
 
-$<$Insert feature description$>$
+The simulation must provide for the generation of transactions (legit and spam).
+
+Traffic generators perform this task.
 
 
 \subsection{Stimulus/Response Sequences}
 
-$<$Insert known stimuli/responses$>$
+Traffic generators are polled at each simulation step to generate more
+transactions according to their configured parameters.
 
 
 \subsection{Functional Requirements}
 
-\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-1 (short title)}
+\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-1 (background level)}
 
-$<$Insert requirement text$>$
+A traffic generator shall have a configurable background transaction level
+(specified in transactions per second).
 
+This is the base rate at which the generator emits transactions.
 
+\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-2 (spike configuration)}
 
+A traffic generator definition shall allow the following optional set of parameters to configure
+traffic spikes:
+
+\begin{enumerate}
+   \item (initial) spike level: peak rate at which the generator emits transactions, specified as positive number of transactions per second (value must exceed generator's background level)
+   \item spike ramp-up duration : non-negative integer time in seconds to scale from background to spike output level
+   \item spike sustain duration: positive time in seconds to sustain the spike's peak output
+   \item spike spike activation interval: trigger spike at these intervals (positive number of seconds $>$ twice the ramp-up + sustain duration. The end of the last spike is considered to be the start of a new interval.
+   \item spike spike activation random offset: non-negative integer number of seconds. The actual spike is triggered a random number of seconds, up to this parameter value, prior or after to the regular scheduled interval trigger. If the value of the random offset is zero, it means no randomization around the interval happens, i.e. the spike is triggered at regular intervals. The value may not exceed the activation interval.
+\end{enumerate}
+
+If any of these parameters are configured, they must all be configured.
+There are no default values.
 
 
 \section{Feature: Node upgrades}
