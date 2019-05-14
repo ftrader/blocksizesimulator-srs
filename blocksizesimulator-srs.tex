@@ -789,8 +789,9 @@ High
 
 Transactions are modeled in a simplified way, without inputs/outputs.
 
-Transactions have a size and associated fee (collected by the miner).
-
+Transactions have associated a size (in bytes), a validation cost incurred
+during validation of a block by a node, and a fee collected by the node that
+mines it.
 
 Two kinds of transactions will be simulated:
 
@@ -805,16 +806,30 @@ tagged to allow accounting of the impact of spamming on the system.
 
 \subsection{Stimulus/Response Sequences}
 
-$<$Insert known stimuli/responses$>$
+Transactions are inserted onto the network by traffic generators which are
+polled at each simulation step.
+
+They enter instantly into transaction queues of all nodes except poison block
+miners.
+
+Relaying of transactions is not further modeled, nodes only care about
+them in terms of their mempool capacities and fees to collect
+(if a regular miner).
 
 
 \subsection{Functional Requirements}
 
-\subsubsection{BLOCKSIM-TRANSACTIONS-REQ-1 (short title)}
+\subsubsection{BLOCKSIM-TRANSACTIONS-REQ-1 (tx size)}
 
-$<$Insert requirement text$>$
+A transaction shall have an associated positive size (in bytes).
 
+\subsubsection{BLOCKSIM-TRANSACTIONS-REQ-2 (tx fee)}
 
+A transaction shall have an associated positive fee payable to a miner.
+
+\subsubsection{BLOCKSIM-TRANSACTIONS-REQ-3 (tx validation cost)}
+
+A transaction shall have an associated positive validation cost (in a suitable unit e.g. cycles).
 
 
 
