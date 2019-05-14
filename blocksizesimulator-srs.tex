@@ -912,11 +912,12 @@ There are no default values.
 A traffic generator shall have configuration parameters for the rates
 of increase, over time, of its background and spike transaction levels.
 
-These shall be positive real numbers value expressing increase in
-transactions per second per second.
+These shall be non-negative real numbers value (with default values of 0)
+expressing increase in transactions per second per second. The default
+is no increase at all.
 
-The increase shall only apply to the spike peak level and not the duration or
-any other time-related parameters.
+If specified, increases shall only apply to the spike peak level and not the
+duration or any other time-related parameters.
 
 
 \subsubsection{BLOCKSIM-TRAFFICGEN-REQ-4 (generated transaction type)}
