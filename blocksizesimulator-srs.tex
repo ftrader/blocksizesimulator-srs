@@ -589,8 +589,15 @@ requirements below.
 
 The main additional capability is to produce blocks.
 
-These blocks also generate revenue for the mining node by way of the
-fees from transactions in a mined block.
+Two different kinds of mining nodes are modeled:
+
+\begin{enumerate}
+   \item Regular miners: they produce blocks based on their mempool which is filled from `external' traffic generators. They represent the `honest miners' that are not trying to harm the system.
+   \item `Poison block' miners: they produce abnormal blocks filled with transactions that have not been propagated over the network in the regular manner. Their poisonous blocks are also much more costly to validate - the aim of these blocks is to harm the rest of the network. An attack by a poison block miner is not expected to last more than a day. A poison block miner always prefers to build on a fork chain containing his own poison blocks.
+\end{enumerate}
+
+Regular mining nodes generate revenue by way of the fees from transactions
+in a mined block. Block rewards are ignored in the model.
 
 
 \subsection{Stimulus/Response Sequences}
@@ -601,68 +608,99 @@ the next block (hashpower of all nodes is assumed equal, and difficulty
 is assumed such that the next block will be found on average within 10
 minutes).
 
+Regular blocks are generated every 10 minutes, uniformly, by a randomly chosen
+regular miner.
+
+If there is a poison block miner, it injects its poison blocks into the network
+at five-minute marks in between the regular blocks.
+
 
 \subsection{Functional Requirements}
 
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-1 (nodes hash at equal rates)}
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-1 (regular vs poison miner)}
 
-At the initialization of the simulation run, each mining node shall be
-assigned a `hashpower` fraction equivalent to 1/M where M is the total number
-of mining nodes specified (and active) at the start.
+A mining node definition shall include a mandatory parameter to denote
+it as either a regular miner or a poison block miner.
 
-NOTE: This ensures that each node has an equal chance of producing
-the next block and allows mining of regular blocks to slow down as the
-network may be impeded by adversarial action that impact mining nodes.
-The difficulty adjustment which would compensate a loss of hashpower
-in such a case, is not modeled.
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-2 (only one poison block miner)}
+
+At most one miner in a scenario shall be designated as a poison block
+miner.
+
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-3 (regular blocks produced every 10 minutes)}
+
+As a simplifying assumption, the regular miners shall mine one block uniformly
+every 10 minutes.
+
+i.e. the first regular block will be produced at t=600.
+
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-4 (random choice of regular miner producing block)}
+
+The regular miner that produces the next block shall be chosen at random
+from the population of regular miners that are active at the time the block
+needs to be created.
 
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-2 (mining node soft cap)}
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-5 (regular mining node soft cap)}
 
-Mining nodes will have a `soft cap' attribute configured by default to
+Regular mining nodes will have a `soft cap' attribute configured by default to
 1/4 of the node's hard cap, and which will limit the size of blocks produced
 by the mining node.
 
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-3 (meaning of zero soft cap)}
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-6 (meaning of zero soft cap)}
 
-A value of zero (0) for `soft cap' parameter shall mean that the mining
+A value of zero (0) for `soft cap' parameter shall mean that a regular mining
 node can produce blocks as big as its its hard limit.
 
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-4 (fill to soft cap unless zero)}
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-7 (fill to soft cap unless zero)}
 
-A mining node will attempt to fit in as many transactions from its mempool
+A regular mining node will attempt to fit in as many transactions from its mempool
 as possible without exceeding its soft cap if that is zero.
 
 NOTE: a soft cap of 0 means fill to the hard cap.
 
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-5 (traffic agnostic)}
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-8 (traffic agnostic)}
 
-A mining node shall not discriminate between `legit' and `spam' transactions
+A regular mining node shall not discriminate between `legit' and `spam' transactions
 when filling a block.
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-6 (minfee for mining)}
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-9 (minfee for mining)}
 
-Transaction which do not carry a minimum fee rates as expected by a mining
+Transaction which do not carry a minimum fee rates as expected by a regular mining
 node shall not mined by that mining node.
 
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-6 (drop arriving below minfee txs)}
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-10 (drop arriving below minfee txs)}
 
 Transactions that arrive outside of a mined block and carrying a fee below
 the minfee of a mining node shall not be entered into its mempool.
 
 For the purpose of the simulation they can be considered `dropped'.
 
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-11 (poison block mining parameters)}
+
+A poison block mining node definition shall include the following mandatory
+parameters describing the poisonous blocks it produces:
+
+\begin{itemize}
+   \item positive integer: time interval offset w.r.t to next regular blocks, in seconds. Defaults to 300s. (5 minutes)
+   \item positive integer: height of the regular block in the simulation after which production of poison blocks will commence. If 0 the first poison block may be issued before the first regular block. If > 0 then it will be issued after the respective regular block, with an offset given by the previous parameter.
+   \item positive integer in range 1..144: number of poison blocks to issue (i.e. not more than a day's worth)
+   \item positive integer: validation cost per transaction in the poisonous block (this can be higher than the standard cost to validate transactions produced by traffic generators)
+   \item positive integer: size of poison block (in bytes). The poison block is filled with as many transactions as fit into this size. (TODO: specify standard size of a transaction)
+\end{itemize}
+
+
 
 \section{Feature: Service nodes}
 
 \subsection{Priority}
 
-TBD
+High
 
 \subsection{Description}
 
