@@ -688,7 +688,7 @@ parameters describing the poisonous blocks it produces:
 
 \begin{itemize}
    \item positive integer: time interval offset w.r.t to next regular blocks, in seconds. Defaults to 300s. (5 minutes)
-   \item positive integer: height of the regular block in the simulation after which production of poison blocks will commence. If 0 the first poison block may be issued before the first regular block. If > 0 then it will be issued after the respective regular block, with an offset given by the previous parameter.
+   \item positive integer: height of the regular block in the simulation after which production of poison blocks will commence. If 0 the first poison block may be issued before the first regular block. If $>$ 0 then it will be issued after the respective regular block, with an offset given by the previous parameter.
    \item positive integer in range 1..144: number of poison blocks to issue (i.e. not more than a day's worth)
    \item positive integer: validation cost per transaction in the poisonous block (this can be higher than the standard cost to validate transactions produced by traffic generators)
    \item positive integer: size of poison block (in bytes). The poison block is filled with as many transactions as fit into this size. (TODO: specify standard size of a transaction)
