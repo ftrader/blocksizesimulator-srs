@@ -611,6 +611,19 @@ network may be impeded by adversarial action that impact mining nodes.
 The difficulty adjustment which would compensate a loss of hashpower
 in such a case, is not modeled.
 
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-2 (mining node soft cap)}
+
+Mining nodes will have a `soft cap' attribute configured by default to
+1/4 of the node's hard cap, and which will limit the size of blocks produced
+by the mining node.
+
+
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-3 (meaning of zero soft cap)}
+
+A value of zero (0) for `soft cap' parameter shall mean that the mining
+node can produce blocks as big as its its hard limit.
+
+
 \section{Feature: Service nodes}
 
 \subsection{Priority}
