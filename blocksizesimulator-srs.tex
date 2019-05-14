@@ -629,6 +629,11 @@ by the mining node.
 A value of zero (0) for `soft cap' parameter shall mean that the mining
 node can produce blocks as big as its its hard limit.
 
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-4 (traffic agnostic)}
+
+A mining node shall not discriminate between `legit' and `spam' transactions
+when filling a block.
+
 
 \section{Feature: Service nodes}
 
@@ -717,11 +722,19 @@ $<$Insert requirement text$>$
 
 \subsection{Priority}
 
-TBD
+High
 
 \subsection{Description}
 
-$<$Insert feature description$>$
+Two kinds of transactions will be simulated:
+
+\begin{itemize}
+   \item `legit` transactions
+   \item `spam` transactions
+\end{itemize}
+
+Nodes will not distinguish between these, but they shall be distinctly
+tagged to allow accounting of the impact of spamming on the system.
 
 
 \subsection{Stimulus/Response Sequences}
