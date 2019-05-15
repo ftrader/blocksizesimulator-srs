@@ -976,6 +976,23 @@ A traffic generator shall generate transactions with fees distributed
 according to the fee levels which have been configured for it.
 
 
+\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-7 (spam budget)}
+
+A traffic generator which is configured to emit `spam' transactions
+shall have a configuration parameter to specify its initial budget
+(in Sim dollars) for transaction fees.
+
+
+\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-7 (spam nodes deplete budget)}
+
+A traffic generator which is configured to emit `spam' transactions
+shall subtract the cost of emitted transaction fees from its available
+spam budget.
+
+NOTE: non-spam traffic generators do not have to account for their fees.
+
+
+
 
 \section{Feature: Node upgrades}
 
