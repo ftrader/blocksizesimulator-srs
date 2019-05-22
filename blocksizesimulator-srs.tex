@@ -93,7 +93,8 @@ This SRS describes the entire simulator system.
 
 
 \section{Document Conventions}
-To be completed (TBC)
+Certain incomplete passages or sections are marked as `To be completed (TBC)',
+`To be determined (TBD)' or with a TODO notice.
 
 
 \section{Intended Audience and Reading Suggestions}
@@ -118,13 +119,13 @@ and `spam' transactions as well as `poison block' providers, the simulator is
 intended to provide information on the following observables:
 
 \begin{itemize}
-\item response characteristics of various dynamic blocksize algorithms
-\item induced transaction delays in face of full blocks (whether from legit or spam traffic)
-\item memory pool (mempool) desynchronization
-\item network splits
-\item node downtime (both service and mining)
-\item upgrade feasibility
-\item cost needed for a malicious actor to incur damage to the network
+   \item response characteristics of various dynamic blocksize algorithms
+   \item induced transaction delays in face of full blocks (whether from legit or spam traffic)
+   \item memory pool (mempool) desynchronization
+   \item network splits
+   \item node downtime (both service and mining)
+   \item upgrade feasibility
+   \item cost needed for a malicious actor to incur damage to the network
 \end{itemize}
 
 
@@ -149,11 +150,11 @@ outside of the simulator project.
 \section{Product Functions}
 Basic description of the main functions:
 \begin{itemize}
-\item Interpret command line arguments provided by user to start a simulation run
-\item Read scenario inputs from user-provided text files
-\item Optionally, generate a block history as initial condition for the simulation
-\item Run the network simulation for n blocks, optionally outputting traces to console or log file
-\item Stop and output simulation results (to console or disk)
+   \item Interpret command line arguments provided by user to start a simulation run
+   \item Read scenario inputs from user-provided text files
+   \item Optionally, generate a block history as initial condition for the simulation
+   \item Run the network simulation for n blocks, optionally outputting traces to console or log file
+   \item Stop and output simulation results (to console or disk)
 \end{itemize}
 
 
@@ -441,24 +442,24 @@ Input data items specified by scenario shall be as follows
 TODO: some may be optional - need to describe better
 
 \begin{enumerate}
-\item Seed for RNG initialization. This may be overridden by a command line parameter.
-\item block height at which to terminate the simulation. This may be overridden by a command line parameter.
-\item Blocksize algorithm to use in nodes (this also defines the `hard' max blocksize for a node)
-\item Definition of the node population
-   \begin{enumerate}
-   \item Number of mining nodes
-   \item Number of service nodes
-   \item Number of generic nodes (optional - generic nodes would be non-mining, non-service nodes)
-   \item Default node mempool size (in bytes)
-   \item Node interuption tolerance threshold (in seconds). If the period where a node drops out exceeds a tolerance threshold, the node is removed from the network permanently.
-   \end{enumerate}
-\item Definition of the mining nodes
-\item Definition of the service nodes
-\item Definition of the traffic generators (these are not nodes, but sources which inject transactions traffic into the simulation)
-   \begin{enumerate}
-   \item sources of `legit' transactions
-   \item sources of `spam' transactions
-   \end{enumerate}
+   \item Seed for RNG initialization. This may be overridden by a command line parameter.
+   \item block height at which to terminate the simulation. This may be overridden by a command line parameter.
+   \item Blocksize algorithm to use in nodes (this also defines the `hard' max blocksize for a node)
+   \item Definition of the node population
+      \begin{enumerate}
+         \item Number of mining nodes
+         \item Number of service nodes
+         \item Number of generic nodes (optional - generic nodes would be non-mining, non-service nodes)
+         \item Default node mempool size (in bytes)
+         \item Node interuption tolerance threshold (in seconds). If the period where a node drops out exceeds a tolerance threshold, the node is removed from the network permanently.
+      \end{enumerate}
+   \item Definition of the mining nodes
+   \item Definition of the service nodes
+   \item Definition of the traffic generators (these are not nodes, but sources which inject transactions traffic into the simulation)
+      \begin{enumerate}
+         \item sources of `legit' transactions
+         \item sources of `spam' transactions
+      \end{enumerate}
 \end{enumerate}
 
 
@@ -807,10 +808,6 @@ TBD
 
 
 
-
-
-
-
 \section{Feature: Transactions}
 
 \subsection{Priority}
@@ -1085,7 +1082,7 @@ Before the simulation is started, the following statistics shall be output
 to the user:
 
 \begin{enumerate}
-\item Total budget of all spam-producing traffic generators
+   \item Total budget of all spam-producing traffic generators
 \end{enumerate}
 
 
@@ -1095,15 +1092,15 @@ After the simulation has concluded, the following statistics shall be output
 to the user:
 
 \begin{enumerate}
-\item Remaining mining nodes
-\item Remaining service nodes
-\item Aggregate delay for `legit' transactions: number of transactions x number of blocks before inclusion
-\item Aggregate time where > 50 percent of mempools are desynchronized
-\item Cost incurred by spammer
-\item Cost incurred by Poison blockers: if block is orphaned, assume the entire block reward is razed for the attacker
-\item Maximum numbers of blocks that are re-organized during the simulation
-\item Total upgrade cost
-\item Total revenue
+   \item Remaining mining nodes
+   \item Remaining service nodes
+   \item Aggregate delay for `legit' transactions: number of transactions x number of blocks before inclusion
+   \item Aggregate time where > 50 percent of mempools are desynchronized
+   \item Cost incurred by spammer
+   \item Cost incurred by Poison blockers: if block is orphaned, assume the entire block reward is razed for the attacker
+   \item Maximum numbers of blocks that are re-organized during the simulation
+   \item Total upgrade cost
+   \item Total revenue
 \end{enumerate}
 
 
