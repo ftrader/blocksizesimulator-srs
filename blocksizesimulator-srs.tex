@@ -607,6 +607,13 @@ maximum blocksize that can be processed by the node, otherwise a fatal
 misconfiguration error shall be reported and the simulation aborted.
 
 
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-12 (drop low-fee txs if full mempool)}
+
+As long as a node's mempool is full, incoming transactions (not in blocks) shall
+evict lower-fee transactions from the node's mempool.
+
+NOTE: this may result in mempool desynchronization
+
 
 \section{Feature: Generic nodes}
 
@@ -827,10 +834,13 @@ TBD: precise formula
 
 \subsubsection{BLOCKSIM-NODE-SERVICE-REQ-3 (service node cost)}
 
-A service node shall accrue operating cost based on the size of its
-mempool. (TBD: is that all?)
+A service node shall accrue operating cost based on its principal
+capacities ("the more powerful the node the costlier to run").
 
-TBD: precise formula
+NOTE: The precise formula is TBD, but could look more or less like this:
+
+maintenance cost/day = C1*mempool capacity + C2*maximum validation size + C3*validation speed per tx
+
 
 
 \section{Feature: Transactions}
