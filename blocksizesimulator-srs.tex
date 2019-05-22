@@ -1069,7 +1069,7 @@ A node shall only upgrade if ALL of the following conditions are met:
    \item number of (legit + spam transactions) as received by the node has increased
 over a "consideration period" (configurable duration in seconds)
 
-   \item revenue > cost
+   \item revenue $>$ cost
 
    \item after the upgrade, revenue would still exceed cost
 \end{enumerate}
@@ -1122,7 +1122,7 @@ to the user:
    \item Remaining mining nodes
    \item Remaining service nodes
    \item Aggregate delay for `legit' transactions: number of transactions x number of blocks before inclusion
-   \item Aggregate time where > 50 percent of mempools are desynchronized
+   \item Aggregate time where $>$ 50 percent of mempools are desynchronized
    \item Cost incurred by spammer
    \item Cost incurred by Poison blockers: if block is orphaned, assume the entire block reward is razed for the attacker
    \item Maximum numbers of blocks that are re-organized during the simulation
@@ -1187,12 +1187,10 @@ $<$Collect a numbered list of the TBD (to be determined) references that remain
 in the SRS so they can be tracked to closure.$>$
 
 \section{Appendix D: To Do List}
-This is a list of changes that still need to be taken into account in
+This is reserved for a list of changes that still need to be taken into account in
 future iterations of this specification.
 
-\begin{itemize}
-   \item (Update feature) Upgrade interval: Interval where node operator periodically considers upgrade if they forsee a need to upgrade. Node operators will only upgrade if 1) current revenue > cost and 2) after upgrade, revenue also > cost. Node operators will upgrade if number of legit + spam transactions are going up at the time of evaluation (consideration period?), and will upgrade to a capacity where they forsee to be enough until the next evaluation.
-\end{itemize}
+
 
 
 \end{document}
