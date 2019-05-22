@@ -196,7 +196,8 @@ reference for future use.
 
 
 \section{Assumptions and Dependencies}
-TBD
+It is assumed that the adaptive algorithms to be evaluated can be developed
+by others according to a well-specified interface definition.
 
 
 \chapter{External Interface Requirements}
@@ -212,7 +213,8 @@ None.
 \section{Software Interfaces}
 The software is stand-alone and uses OS facilities for console and file I/O.
 
-No other software interfaces are planned.
+Except for an interface to the adaptive blocksize algorithms to be evaluated,
+no interfaces to other software are planned.
 
 \subsection{Scenario Files}
 Precise structure: TBD - might be script files in the interpreter language
@@ -225,16 +227,17 @@ simulation aspects have been established.
 \subsection{Blocksize algorithms}
 
 To be specified as an interface which has to be implemented for a node.
-It will have access to the node's view of the blockchain in order to make
-its calculations based on past block sizes.
+It will have access to the node's view of the blockchain in order to calculate
+the maximum block size (`hard cap') for the next block based on past block sizes.
 
 The same algorithm will be used by all the nodes in a simulation run.
 
 The algorithms to be evaluated are not considered part of this simulator
 specification.
 
-As part of the simulator, a fixed blocksize limit (`hard cap') of 32MB
-can be implemented as an example of the interface.
+Since the simulator will need to come with some working default blocksize
+algorithm, the standard fixed blocksize limit of 32MB in the current
+Bitcoin Cash protocol can be implemented as an example instance.
 
 
 \section{Communications Interfaces}
@@ -618,6 +621,12 @@ As long as a node's mempool is full, incoming transactions (not in blocks) shall
 evict lower-fee transactions from the node's mempool.
 
 NOTE: this may result in mempool desynchronization
+
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-13 (recompute cap after extending chain)
+
+Whenever a node has finished extending its active chain, it shall invoke
+the scenario-specified adaptive blocksize algorithm to obtain a newly
+computed maximum block size (`hard cap').
 
 
 \section{Feature: Generic nodes}
