@@ -755,6 +755,28 @@ parameters describing the poisonous blocks it produces:
    \item positive integer: size of poison block (in bytes). The poison block is filled with as many transactions as fit into this size. (TODO: specify standard size of a transaction)
 \end{itemize}
 
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-12 (regular mining revenue)}
+
+When a regular mining node mines a block, the fees of all transactions in the block
+shall be counted as revenue for the node.
+
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-13 (regular mining cost)}
+
+Cost of operating a regular mining node shall be based on the validation
+cost of blocks and transactions.
+
+TBD: precise formula
+
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-14 (poison mining revenue)}
+
+Poison mining nodes shall not generate any revenue.
+
+\subsubsection{BLOCKSIM-NODE-MINING-REQ-15 (poison mining cost)}
+
+Cost of operating a poison mining node shall be based on the validation
+cost of incoming blocks and transactions.
+
+TBD: precise formula (same as for BLOCKSIM-NODE-MINING-REQ-13)
 
 
 \section{Feature: Service nodes}
