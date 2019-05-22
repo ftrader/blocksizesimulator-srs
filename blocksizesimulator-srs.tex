@@ -130,8 +130,11 @@ intended to provide information on the following observables:
 
 
 \section{References}
-TBC
-
+\begin{itemize}
+   \item text file with rough requirements ompiled by imaginary_username
+   \item private Slack discussion notes with clarification of rough requirements
+   \item Asymmetric Moving Maxblocksize Based On Median (https://github.com/bitcoincashorg/bitcoincash.org/pull/149)
+\end{itemize}
 
 \chapter{Overall Description}
 
@@ -148,6 +151,7 @@ outside of the simulator project.
 
 
 \section{Product Functions}
+
 Basic description of the main functions:
 \begin{itemize}
    \item Interpret command line arguments provided by user to start a simulation run
@@ -173,19 +177,24 @@ Interpretation of the simulator output will likely require domain expert knowled
 
 
 \section{Operating Environment}
-The simulator is intended to run on standard commodity personal computer hardware
-equipped a suitable interpreter and any required libraries.
+The simulator is intended to run on reasonably fast commodity personal
+computer hardware equipped a suitable interpreter and any required libraries.
 
 
 \section{Design and Implementation Constraints}
-TBC
+To be decided (TBD)
+
 
 \section{User Documentation}
-TBC
+No separate user doc planned aside from this specification and some commented
+example scenarios.
+
+Initial use of the simulator should yield more scenarios which can serve as
+reference for future use.
 
 
 \section{Assumptions and Dependencies}
-TBC
+TBD
 
 
 \chapter{External Interface Requirements}
@@ -206,9 +215,10 @@ No other software interfaces are planned.
 \subsection{Scenario Files}
 It is determined they will exist, but:
 
-Precise structure: To be decided (TBD)
+Precise structure: TBD
 
 \subsection{Blocksize algorithms}
+
 To be specified as an interface which has to be implemented for a node.
 It will have access to the node's view of the blockchain in order to make
 its calculations based on past block sizes.
@@ -220,6 +230,7 @@ specification.
 
 As part of the simulator, a fixed blocksize limit (`hard cap') of 32MB
 can be implemented as an example of the interface.
+
 
 \section{Communications Interfaces}
 None.
