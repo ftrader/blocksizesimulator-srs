@@ -366,7 +366,10 @@ the network immediately.
 
 \subsection{Stimulus/Response Sequences}
 
-The smallest time unit of the simulator will be fixed.
+At each timestep the simulator shall evaluate the production of new
+transactions and blocks, the upgrade decisions of eligible nodes,
+the processing of input data by active nodes and state transitions
+of nodes which may drop out of the network.
 
 
 \subsection{Functional Requirements}
@@ -631,10 +634,9 @@ exceeded mempool capacity apply.
 
 \subsection{Functional Requirements}
 
-\subsubsection{BLOCKSIM-NODE-GENERIC-REQ-1 (short title)}
+\subsubsection{BLOCKSIM-NODE-GENERIC-REQ-1 (no cost/revenue for generic nodes)}
 
-$<$Insert requirement text$>$
-
+A generic node shall not be required to do any revenue / cost of maintenance accounting.
 
 
 
