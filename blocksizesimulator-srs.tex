@@ -215,8 +215,6 @@ The software is stand-alone and uses OS facilities for console and file I/O.
 No other software interfaces are planned.
 
 \subsection{Scenario Files}
-It is determined they will exist, but:
-
 Precise structure: TBD
 
 \subsection{Blocksize algorithms}
@@ -243,13 +241,19 @@ None.
 This section describes the main features of the simulation and lists the
 functional requirements associated with them.
 
+To shorten the document, the `Priority` subsections have been removed
+from the individual feature sections. All matters of feature priority should
+be described here.
+
+All features are considered high priority except for the following exceptions:
+
+\begin{itemize}
+   \item Node upgrade process implementation (Medium priority)
+   \item Generic nodes (Low priority)
+\end{itemize}
 
 
 \section{Feature: General}
-
-\subsection{Priority}
-
-High
 
 \subsection{Description}
 
@@ -307,11 +311,6 @@ the Sim Dollar, amounts of which are denoted in output by a preceding dollar sig
 
 \section{Feature: Network}
 
-\subsection{Priority}
-
-High
-
-
 \subsection{Description}
 
 The simulation requires modeling of a network layer on which
@@ -346,11 +345,6 @@ queue of all other nodes instantaneously (at the current simulation time step).
 
 
 \section{Feature: Time}
-
-\subsection{Priority}
-
-High
-
 
 \subsection{Description}
 
@@ -398,11 +392,6 @@ times assigned to them (e.g. t=-1, t=-43, etc.)
 
 
 \section{Feature: Scenarios}
-
-\subsection{Priority}
-
-High
-
 
 \subsection{Description}
 
@@ -478,9 +467,6 @@ TODO: some may be optional - need to describe better
 
 
 \section{Feature: Node class}
-\subsection{Priority}
-
-High
 
 \subsection{Description}
 
@@ -620,10 +606,6 @@ misconfiguration error shall be reported and the simulation aborted.
 
 \section{Feature: Generic nodes}
 
-\subsection{Priority}
-
-Low
-
 \subsection{Description}
 
 Generic nodes are neither mining nor economic nodes, and are modeled
@@ -657,10 +639,6 @@ $<$Insert requirement text$>$
 
 
 \section{Feature: Mining nodes}
-
-\subsection{Priority}
-
-High
 
 \subsection{Description}
 
@@ -779,10 +757,6 @@ parameters describing the poisonous blocks it produces:
 
 \section{Feature: Service nodes}
 
-\subsection{Priority}
-
-High
-
 \subsection{Description}
 
 Service nodes are used to model economic service providers, and thus
@@ -822,10 +796,6 @@ TBD
 
 
 \section{Feature: Transactions}
-
-\subsection{Priority}
-
-High
 
 \subsection{Description}
 
@@ -877,10 +847,6 @@ A transaction shall have an associated positive validation cost (in a suitable u
 
 \section{Feature: Blocks}
 
-\subsection{Priority}
-
-TBD
-
 \subsection{Description}
 
 $<$Insert feature description$>$
@@ -902,10 +868,6 @@ $<$Insert requirement text$>$
 
 
 \section{Feature: Traffic generators}
-
-\subsection{Priority}
-
-High
 
 \subsection{Description}
 
@@ -1006,10 +968,6 @@ NOTE: non-spam traffic generators do not have to account for their fees.
 
 \section{Feature: Node upgrades}
 
-\subsection{Priority}
-
-Medium
-
 \subsection{Description}
 
 At certain upgrade intervals, node "operators" will consider to upgrade
@@ -1067,11 +1025,6 @@ be refined until then.
 
 
 \section{Feature: Outputs}
-
-\subsection{Priority}
-
-High
-
 
 \subsection{Description}
 
