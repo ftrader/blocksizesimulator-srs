@@ -450,6 +450,7 @@ TODO: some may be optional - need to describe better
    \item Seed for RNG initialization. This may be overridden by a command line parameter.
    \item block height at which to terminate the simulation. This may be overridden by a command line parameter.
    \item Blocksize algorithm to use in nodes (this also defines the `hard' max blocksize for a node)
+   \item List of pre-historical block sizes (for blocks preceding the first mined block)
    \item Definition of the node population
       \begin{enumerate}
          \item Number of mining nodes
@@ -886,13 +887,21 @@ A transaction shall have an associated positive validation cost (in a suitable u
 
 \subsection{Description}
 
-Blocks are linked into a chain via a block id.
+The simulation will be initialized with a certain amount of "history" of
+pseudo-blocks of negative height, of which only the size is known.
+
+The sizes of these historical blocks shall be configurable via scenario.
+
+Newly mined blocks are linked into a chain via a block id and a reference
+to their parent block id.
 
 No hashing needs to be performed.
 
 Regular blocks must include a list of transactions.
 
-Poison blocks can be represented in a simplified way.
+Poison blocks can be represented in a simplified way which allows huge
+blocks to be represented using less space, since their individual
+transactions are never propagated and can thus be abstracted.
 
 
 \subsection{Stimulus/Response Sequences}
@@ -926,6 +935,21 @@ A poison block shall have the following attributes beyond the linking ids:
 This allows to compute the block size and its impact on local mempools
 as well as accounting.
 
+\subsubsection{BLOCKSIM-BLOCKS-REQ-4 (configurable block prehistory)}
+
+A list of prehistorical blocks forming a chain preceding the first mined
+block (denoted by height 0) shall be configurable via scenario file.
+
+NOTE: these prehistorical blocks shall have negative block heights
+
+\subsubsection{BLOCKSIM-BLOCKS-REQ-5 (only size for prehistorical blocks)}
+
+The list of prehistorical blocks shall record only the size of each such
+block.
+
+NOTE: the size of the prehistorical block and its position in the chain
+(which is inferred by its position in the prehistory list) is the only thing
+that matters to the adaptive block size algorithms under evaluation.
 
 
 \section{Feature: Traffic generators}
