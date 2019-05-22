@@ -1002,21 +1002,57 @@ Medium
 
 \subsection{Description}
 
-$<$Insert feature description$>$
+At certain upgrade intervals, node "operators" will consider to upgrade
+their nodes if the foresee a need and if it makes economic sense
+(node revenue exceeds cost).
 
 
 \subsection{Stimulus/Response Sequences}
 
-$<$Insert known stimuli/responses$>$
+If upgrades are enabled for a node, an upgrade interval timer determines
+when the node takes the next upgrade decision.
+
+The decision to upgrade is evaluated when simulation control passes to
+consider the node, before any other actions (e.g. processing queued
+transactions or blocks).
 
 
 \subsection{Functional Requirements}
 
-\subsubsection{BLOCKSIM-UPGRADES-REQ-1 (short title)}
+\subsubsection{BLOCKSIM-UPGRADES-REQ-1 (upgrade interval parameter per node)}
 
-$<$Insert requirement text$>$
+A node shall allow an associated upgrade interval (non-negative integer in seconds).
+If the value of the parameter is 0 (zero), no upgrades shall be undertaken
+for the node.
+
+\subsubsection{BLOCKSIM-UPGRADES-REQ-2 (node class upgrade parameters)}
+
+If no node-specific upgrade interval is specified, a node shall inherit
+a class-wide node interval configuration parameter (i.e. a parameter
+specifying the upgrade interval for an entire class of nodes (mining,
+service, generic).
+
+\subsubsection{BLOCKSIM-UPGRADES-REQ-3 (upgrade conditions)}
+
+A node shall only upgrade if ALL of the following conditions are met:
+
+\begin{enumerate}
+   \item number of (legit + spam transactions) as received by the node has increased
+over a "consideration period" (configurable duration in seconds)
+
+   \item revenue > cost
+
+   \item after the upgrade, revenue would still exceed cost
+\end{enumerate}
 
 
+\subsubsection{BLOCKSIM-UPGRADES-REQ-3 (upgrade effect)}
+If the upgrade conditions are all met, a node shall upgrade to a capacity
+which is estimated to be enough until the next evaluation.
+
+TODO: this estimation still requires fleshing out - it is presumed that
+the upgrade feature will be implemented last and the specification will
+be refined until then.
 
 
 
