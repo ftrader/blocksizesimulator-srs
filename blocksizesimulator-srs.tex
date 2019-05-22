@@ -757,8 +757,8 @@ parameters describing the poisonous blocks it produces:
 
 \subsubsection{BLOCKSIM-NODE-MINING-REQ-12 (regular mining revenue)}
 
-When a regular mining node mines a block, the fees of all transactions in the block
-shall be counted as revenue for the node.
+When a regular mining node mines a block, the fees of all transactions
+(legit and spam) in the block shall be counted as revenue for the node.
 
 \subsubsection{BLOCKSIM-NODE-MINING-REQ-13 (regular mining cost)}
 
@@ -803,20 +803,33 @@ capacities of the node over time.
 
 \subsection{Stimulus/Response Sequences}
 
-$<$Insert known stimuli/responses$>$
+Upgrade decisions are taken before any other processing done by the node.
 
+Then transactions queues are cleared towards the node's mempool
 
 \subsection{Functional Requirements}
 
-\subsubsection{BLOCKSIM-NODE-SERVICE-REQ-1 (revenue formula)}
+\subsubsection{BLOCKSIM-NODE-SERVICE-REQ-1 (drop arriving below minfee txs)}
 
-TBD
+Transactions that arrive outside of a mined block and that carry a fee below
+the minfee of a service node shall not be entered into its mempool.
+
+For the purpose of the simulation they can be considered `dropped'.
 
 
-\subsubsection{BLOCKSIM-NODE-SERVICE-REQ-2 (cost of maintenance formula)}
+\subsubsection{BLOCKSIM-NODE-SERVICE-REQ-2 (service node revenue)}
 
-TBD
+A service node shall earn revenue based on the number of legitimate
+transactions it (a) stores in its mempool  (b) clears via blocks validation.
 
+TBD: precise formula
+
+\subsubsection{BLOCKSIM-NODE-SERVICE-REQ-3 (service node cost)}
+
+A service node shall accrue operating cost based on the size of its
+mempool. (TBD: is that all?)
+
+TBD: precise formula
 
 
 \section{Feature: Transactions}
@@ -873,21 +886,45 @@ A transaction shall have an associated positive validation cost (in a suitable u
 
 \subsection{Description}
 
-$<$Insert feature description$>$
+Blocks are linked into a chain via a block id.
+
+No hashing needs to be performed.
+
+Regular blocks must include a list of transactions.
+
+Poison blocks can be represented in a simplified way.
 
 
 \subsection{Stimulus/Response Sequences}
 
-$<$Insert known stimuli/responses$>$
+When a mining node generates a block, it links it to the tip of the chain
+of blocks on which it is building.
 
 
 \subsection{Functional Requirements}
 
-\subsubsection{BLOCKSIM-BLOCKS-REQ-1 (short title)}
+\subsubsection{BLOCKSIM-BLOCKS-REQ-1 (common block structure)}
 
-$<$Insert requirement text$>$
+A block shall have a block id of its own and a `previous block` id.
 
 
+\subsubsection{BLOCKSIM-BLOCKS-REQ-2 (regular block structure)}
+
+A regular block shall have an associated set of transactions.
+
+
+\subsubsection{BLOCKSIM-BLOCKS-REQ-3 (poison blocks structure)}
+
+A poison block shall have the following attributes beyond the linking ids:
+
+\begin{enumerate}
+   \item number of transactions
+   \item size in bytes per transaction
+   \item fee per transaction
+\end{enumerate}
+
+This allows to compute the block size and its impact on local mempools
+as well as accounting.
 
 
 
