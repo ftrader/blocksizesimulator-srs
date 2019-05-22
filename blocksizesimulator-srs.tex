@@ -518,7 +518,7 @@ entering a node's mempool is not modeled explicitly.
 
 \subsection{Functional Requirements}
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-0 (node type identifier)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-1 (node type identifier)}
 
 Each nodes shall be identified by an attribute as one of the following types:
 
@@ -530,19 +530,19 @@ Each nodes shall be identified by an attribute as one of the following types:
 \end{itemize}
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-1 (mempool per node)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-2 (mempool per node)}
 
 Nodes shall maintain their own mempool containing transactions already seen
 but not removed by a block in the node's active blockchain history.
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-2 (blockchain history per node)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-3 (blockchain history per node)}
 
 Nodes shall maintain their own history of the blockchain, as a list of
 linked blocks which the node has been able to `validate`.
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-3 (validation rate per node)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-4 (validation rate per node)}
 
 Nodes shall have an overrideable attribute which defines a processing rate
 at which they are able to validate blocks.
@@ -551,20 +551,20 @@ This rate may be defined in terms of some unit (e.g. some `cycles` or `ops`)
 used by blocks to specify their validation cost.
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-4 (maximum processable regular block size)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-5 (maximum processable regular block size)}
 
 Nodes shall have an overrideable attribute which defines a maximum processable
 block size (in bytes) for regular blocks.
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-5 (maximum processable poison block size)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-6 (maximum processable poison block size)}
 
 Nodes shall have an overrideable attribute which defines a maximum processable
 block size (in bytes) for poison blocks. Its value must be greater than or
 equal the maximum size of regular blocks.
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-6 (input queue for blocks)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-7 (input queue for blocks)}
 
 Nodes shall maintain a queue for blocks received from miners but not
 yet validated.
@@ -574,7 +574,7 @@ sequentially, but may be receiving blocks of later from miners while they
 are still processing earlier blocks.
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-7 (parallel validation of same-height blocks)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-8 (parallel validation of same-height blocks)}
 
 Nodes shall validate received blocks in parallel according to their
 configured validation rates and the validation cost of each block.
@@ -585,7 +585,7 @@ Once a node has validated a block at a given height, it aborts validation
 of other candidate blocks for the same height.
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-8 (mempool space required for block validation)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-9 (mempool space required for block validation)}
 
 Validation is subject to mempool constraints.
 Transactions not already received into the mempool (e.g. those in a `poison block`)
@@ -595,13 +595,13 @@ NOTE: as per general node requirements, if the mempool capacity is reached
 the node is considered to have gone down (into maintenance).
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-9 (parameter to dropout when time exceeded)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-10 (parameter to dropout when time exceeded)}
 
 A node's definition shall include a boolean configuration parameter which
 controls whether it drops into maintenance if a block's validation time exceeds 10 minutes.
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-10 (action if block validation $>$ 10 minutes)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-11 (action if block validation $>$ 10 minutes)}
 
 If a node is unable to process a block within a simulation time of 10 minutes,
 it shall, depending on the aforementioned  boolean configuration parameter,
@@ -613,21 +613,21 @@ cut-off period, or go down entirely if the node gets stuck forever or crashes
 on such a block.
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-11 (node mempool cap must $>$ node max blocksize)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-12 (node mempool cap must $>$ node max blocksize)}
 
 A node's configured mempool capacity shall exceed the configured
 maximum blocksize that can be processed by the node, otherwise a fatal
 misconfiguration error shall be reported and the simulation aborted.
 
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-12 (drop low-fee txs if full mempool)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-13 (drop low-fee txs if full mempool)}
 
 As long as a node's mempool is full, incoming transactions (not in blocks) shall
 evict lower-fee transactions from the node's mempool.
 
 NOTE: this may result in mempool desynchronization
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-13 (recompute cap after extending chain)}
+\subsubsection{BLOCKSIM-NODE-BASE-REQ-14 (recompute cap after extending chain)}
 
 Whenever a node has finished extending its active chain, it shall invoke
 the scenario-specified adaptive blocksize algorithm to obtain a newly
