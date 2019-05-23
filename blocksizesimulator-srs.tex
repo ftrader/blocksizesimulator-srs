@@ -25,21 +25,29 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \hypersetup{
-    bookmarks=false,      % show bookmarks bar?
-                          % title
+    % show bookmarks bar?
+    bookmarks=false,
+    % title
     pdftitle={Adjustable Blocksize Limit Scenario Simulator SRS},
-    pdfauthor={various},  % author
-                          % subject of the document
+    % author
+    pdfauthor={various},
+    % subject of the document
     pdfsubject={Software Requirements Specification},
-                          % list of keywords
+    % list of keywords
     pdfkeywords={Bitcoin, simulator, blocksize, adaptive, dynamic,
-                 software, requirements, SRS},
-    colorlinks=true,      % false: boxed links; true: colored links
-    linkcolor=blue,       % color of internal links
-    citecolor=black,      % color of links to bibliography
-    filecolor=black,      % color of file links
-    urlcolor=purple,      % color of external links
-    linktoc=page          % only page is linked
+		 software, requirements, SRS},
+    % false: boxed links; true: colored links
+    colorlinks=true,
+    % color of internal links
+    linkcolor=blue,
+    % color of links to bibliography
+    citecolor=black,
+    % color of file links
+    filecolor=black,
+    % color of external links
+    urlcolor=purple,
+    % only page is linked
+    linktoc=page
 }%
 \def\myversion{0.1.2 }
 \date{}
@@ -50,1215 +58,1267 @@
 \begin{document}
 
 \begin{flushright}
-    \rule{16cm}{5pt}\vskip1cm
-    \begin{bfseries}
-        \Huge{SOFTWARE REQUIREMENTS\\ SPECIFICATION}\\
-        \vspace{1.9cm}
-        for\\
-        \vspace{1.9cm}
-        Adjustable Blocksize Limit Scenario Simulator\\
-        \vspace{1.9cm}
-        \LARGE{Version \myversion (draft)}\\
-        \vspace{1.9cm}
-        Prepared by Bitcoin Cash developers\\
-        \vspace{1.9cm}
-        \today\\
-    \end{bfseries}
+  \rule{16cm}{5pt}\vskip1cm
+  \begin{bfseries}
+    \Huge{SOFTWARE REQUIREMENTS\\ SPECIFICATION}\\
+    \vspace{1.9cm}
+    for\\
+    \vspace{1.9cm}
+    Adjustable Blocksize Limit Scenario Simulator\\
+    \vspace{1.9cm}
+    \LARGE{Version \myversion (draft)}\\
+    \vspace{1.9cm}
+    Prepared by Bitcoin Cash developers\\
+    \vspace{1.9cm}
+    \today\\
+  \end{bfseries}
 \end{flushright}
 
 \tableofcontents
 
-
 \chapter*{Revision History}
 
-\begin{center}
+  \begin{center}
     \begin{tabular}{|c|c|c|c|}
-        \hline
-	    Name & Date & Reason For Changes & Version\\
-        \hline
-	    imaginary\_username & 2019-05-12 & initial text requirements & n/a\\
-        \hline
-	    freetrader & 2019-05-22 & initial SRS draft & 0.1\\
-        \hline
-	    imaginary\_username & 2019-05-23 & small clarifications & 0.1.1 \\
-        \hline
-	    freetrader & 2019-05-23 & formatting, metadata & 0.1.2 \\
-        \hline
+      \hline
+      Name                & Date       & Reason For Changes                                  & Version \\
+      \hline
+      imaginary\_username & 2019-05-12 & initial text requirements                           & n/a     \\
+      \hline
+      freetrader          & 2019-05-22 & initial SRS draft                                   & 0.1     \\
+      \hline
+      imaginary\_username & 2019-05-23 & small clarifications                                & 0.1.1   \\
+      \hline
+      freetrader          & 2019-05-23 & cleanup, some req changes (see commits since 0.1.1) & 0.1.2   \\
+      \hline
     \end{tabular}
-\end{center}
+  \end{center}
 
 \chapter{Introduction}
 
+  \section{Purpose}
 
-\section{Purpose}
-This document describes all the requirements for a blocksize simulator
-(hereafter shortened to `simulator').
+    This document describes all the requirements for a blocksize simulator
+    (hereafter shortened to `simulator').
 
-These requirements do not yet map to an actual implementation release
-as the simulator has not yet been developed.
+    These requirements do not yet map to an actual implementation release
+    as the simulator has not yet been developed.
 
-This SRS describes the entire simulator system.
+    This SRS describes the entire simulator system.
 
+  \section{Document Conventions}
 
-\section{Document Conventions}
-Certain incomplete passages or sections are marked as `To be completed (TBC)',
-`To be determined (TBD)' or with a TODO notice.
+    Certain incomplete passages or sections are marked as `To be completed
+    (TBC)', `To be determined (TBD)' or with a TODO notice.
 
+  \section{Intended Audience and Reading Suggestions}
 
-\section{Intended Audience and Reading Suggestions}
-This document is intended for software developers and users of the simulator.
+    This document is intended for software developers and users of the
+    simulator.
 
-Software developers are encouraged to develop their own implementations based
-on these requirements.
+    Software developers are encouraged to develop their own implementations
+    based on these requirements.
 
-Users may find the requirements useful to understand what the simulator is
-intended to do.
+    Users may find the requirements useful to understand what the simulator is
+    intended to do.
 
+  \section{Project Scope}
 
+    The purpose of the simulator is to test a narrow class of adjustable
+    blocksize schemes for Bitcoin Cash, where consensus blocksize limits are
+    adjusted with only constants and actual blocksizes as inputs.
 
-\section{Project Scope}
-The purpose of the simulator is to test a narrow class of adjustable
-blocksize schemes for Bitcoin Cash, where consensus blocksize limits are
-adjusted with only constants and actual blocksizes as inputs.
+    Using a simplified model of a Bitcoin Cash network comprised of
+    resource-constrained but upgradeable mining and service nodes, and
+    including sources of `legitimate' and `spam' transactions as well as
+    `poison block' providers, the simulator is intended to provide information
+    on the following observables:
 
-Using a simplified model of a Bitcoin Cash network comprised of resource-constrained
-but upgradeable mining and service nodes, and including sources of `legitimate'
-and `spam' transactions as well as `poison block' providers, the simulator is
-intended to provide information on the following observables:
+    \begin{itemize}
+      \item response characteristics of various dynamic blocksize algorithms
+      \item induced transaction delays in face of full blocks (whether from
+        legit or spam traffic)
+      \item memory pool (mempool) desynchronization
+      \item network splits
+      \item node downtime (both service and mining)
+      \item upgrade feasibility
+      \item cost needed for a malicious actor to incur damage to the network
+    \end{itemize}
 
-\begin{itemize}
-   \item response characteristics of various dynamic blocksize algorithms
-   \item induced transaction delays in face of full blocks (whether from legit or spam traffic)
-   \item memory pool (mempool) desynchronization
-   \item network splits
-   \item node downtime (both service and mining)
-   \item upgrade feasibility
-   \item cost needed for a malicious actor to incur damage to the network
-\end{itemize}
+  \section{References}
 
+    \begin{itemize}
+      \item text file with rough requirements ompiled by imaginary\_username
+      \item private Slack discussion notes with clarification of rough
+        requirements
+      \item Asymmetric Moving Maxblocksize Based On Median
 
-\section{References}
-\begin{itemize}
-   \item text file with rough requirements ompiled by imaginary\_username
-   \item private Slack discussion notes with clarification of rough requirements
-   \item Asymmetric Moving Maxblocksize Based On Median
-
-      (https://github.com/bitcoincashorg/bitcoincash.org/pull/149)
-\end{itemize}
+        (https://github.com/bitcoincashorg/bitcoincash.org/pull/149)
+    \end{itemize}
 
 \chapter{Overall Description}
 
+  \section{Product Perspective}
 
-\section{Product Perspective}
-The simulator is intended to inform the selection of a dynamic blocksize algorithm
-for Bitcoin Cash.
+    The simulator is intended to inform the selection of a dynamic blocksize
+    algorithm for Bitcoin Cash.
 
-It is intended to be standalone, self-contained, easily adaptable and
-re-usable in future.
+    It is intended to be standalone, self-contained, easily adaptable and
+    re-usable in future.
 
-Test scenarios and algorithms subjected to simulation may be maintained
-outside of the simulator project.
+    Test scenarios and algorithms subjected to simulation may be maintained
+    outside of the simulator project.
 
+  \section{Product Functions}
 
-\section{Product Functions}
+    Basic description of the main functions:
+    \begin{itemize}
+      \item Interpret command line arguments provided by user to start a
+        simulation run
+      \item Read scenario inputs from user-provided text files
+      \item Optionally, generate a block history as initial condition for the
+        simulation
+      \item Run the network simulation for n blocks, optionally outputting
+        traces to console or log file
+      \item Stop and output simulation results (to console or disk)
+    \end{itemize}
 
-Basic description of the main functions:
-\begin{itemize}
-   \item Interpret command line arguments provided by user to start a simulation run
-   \item Read scenario inputs from user-provided text files
-   \item Optionally, generate a block history as initial condition for the simulation
-   \item Run the network simulation for n blocks, optionally outputting traces to console or log file
-   \item Stop and output simulation results (to console or disk)
-\end{itemize}
+  \section{User Classes and Characteristics}
 
+    The simulator is intended to be used by anyone with an interest in Bitcoin
+    Cash dynamic blocksize algorithms.
 
+    This includes protocol developers, miners, service providers and hobbyists.
 
-\section{User Classes and Characteristics}
-The simulator is intended to be used by anyone with an interest in Bitcoin Cash
-dynamic blocksize algorithms.
+    Operation of the simulator will require only editing of text files and
+    issuance of commands in a shell (i.e. at least initially it will be an
+    interpreted command line program).
 
-This includes protocol developers, miners, service providers and hobbyists.
+    Interpretation of the simulator output will likely require domain expert
+    knowledge.
 
-Operation of the simulator will require only editing of text files and issuance of
-commands in a shell (i.e. at least initially it will be an interpreted command line
-program).
+  \section{Operating Environment}
 
-Interpretation of the simulator output will likely require domain expert knowledge.
+    The simulator is intended to run on reasonably fast commodity personal
+    computer hardware equipped a suitable interpreter and any required
+    libraries.
 
+  \section{Design and Implementation Constraints}
 
-\section{Operating Environment}
-The simulator is intended to run on reasonably fast commodity personal
-computer hardware equipped a suitable interpreter and any required libraries.
+    To be decided (TBD)
 
+  \section{User Documentation}
 
-\section{Design and Implementation Constraints}
-To be decided (TBD)
+    No separate user doc planned aside from this specification and some
+    commented example scenarios.
 
+    Initial use of the simulator should yield more scenarios which can serve as
+    reference for future use.
 
-\section{User Documentation}
-No separate user doc planned aside from this specification and some commented
-example scenarios.
+  \section{Assumptions and Dependencies}
 
-Initial use of the simulator should yield more scenarios which can serve as
-reference for future use.
+    It is assumed that the adaptive algorithms to be evaluated can be developed
+    by others according to a well-specified interface definition.
 
+    At least initially, certain simplifying assumption can be made in terms
+    of the transaction minimum fee rate (e.g. assume 1 sat/byte flat rate).
 
-\section{Assumptions and Dependencies}
-It is assumed that the adaptive algorithms to be evaluated can be developed
-by others according to a well-specified interface definition.
-
-At least initially, certain simplifying assumption can be made in terms
-of the transaction minimum fee rate (e.g. assume 1 sat/byte flat rate).
-
-The node upgrading aspects of the simulation can also be stubbed initially.
-
+    The node upgrading aspects of the simulation can also be stubbed initially.
 
 \chapter{External Interface Requirements}
 
-\section{User Interfaces}
-Initially, the simulator user interface will be text console driven with input
-provided by command line and configuration text files, and output written to
-console and/or disk.
+  \section{User Interfaces}
 
-\section{Hardware Interfaces}
-None.
+    Initially, the simulator user interface will be text console driven with
+    input provided by command line and configuration text files, and output
+    written to console and/or disk.
 
-\section{Software Interfaces}
-The software is stand-alone and uses OS facilities for console and file I/O.
+  \section{Hardware Interfaces}
 
-Except for an interface to the adaptive blocksize algorithms to be evaluated,
-no interfaces to other software are planned.
+    None.
 
-\subsection{Scenario Files}
-Simplified structure: A .json file with each parameter as a key, and relevant 
-timepoints as subkeys. An initial value is specified for each parameter, and 
-the simulator assumes the value remain unchanged until otherwise changed
-by another following subkey. Per-node specifications can be nested in.
+  \section{Software Interfaces}
 
-A "full" structured scenario data format may be implemented after the core
-simulation aspects have been established.
+    The software is stand-alone and uses OS facilities for console and file
+    I/O.
 
+    Except for an interface to the adaptive blocksize algorithms to be
+    evaluated, no interfaces to other software are planned.
 
-\subsection{Blocksize algorithms}
+    \subsection{Scenario Files}
 
-To be specified as an interface which has to be implemented for a node.
-It will have access to the node's view of the blockchain in order to calculate
-the maximum block size (`hard cap') for the next block based on past block sizes.
+      Simplified structure: A .json file with each parameter as a key, and
+      relevant timepoints as subkeys.
+      An initial value is specified for each parameter, and the simulator
+      assumes the value remain unchanged until otherwise changed by another
+      following subkey.
+      Per-node specifications can be nested in.
 
-The same algorithm will be used by all the nodes in a simulation run.
+      A "full" structured scenario data format may be implemented after the
+      core simulation aspects have been established.
 
-The algorithms to be evaluated are not considered part of this simulator
-specification.
+    \subsection{Blocksize algorithms}
 
-Since the simulator will need to come with some working default blocksize
-algorithm, the standard fixed blocksize limit of 32MB in the current
-Bitcoin Cash protocol can be implemented as an example instance.
+      To be specified as an interface which has to be implemented for a node.
+      It will have access to the node's view of the blockchain in order to
+      calculate the maximum block size (`hard cap') for the next block
+      based on past block sizes.
 
+      The same algorithm will be used by all the nodes in a simulation run.
 
-\section{Communications Interfaces}
-None.
+      The algorithms to be evaluated are not considered part of this simulator
+      specification.
 
+      Since the simulator will need to come with some working default blocksize
+      algorithm, the standard fixed blocksize limit of 32MB in the current
+      Bitcoin Cash protocol can be implemented as an example instance.
+
+  \section{Communications Interfaces}
+
+    None.
 
 \chapter{System Features}
 
-This section describes the main features of the simulation and lists the
-functional requirements associated with them.
+  This section describes the main features of the simulation and lists the
+  functional requirements associated with them.
 
-To shorten the document, the `Priority` subsections have been removed
-from the individual feature sections. All matters of feature priority should
-be described here.
+  To shorten the document, the `Priority` subsections have been removed
+  from the individual feature sections.  All matters of feature priority
+  should be described here in this features pre-amble.
 
-All features are considered high priority except for the following exceptions:
+  All features are considered high priority except for the following
+  exceptions:
 
-\begin{itemize}
-   \item Node upgrade process implementation (Medium priority)
-   \item Generic nodes (Low priority)
-\end{itemize}
+  \begin{itemize}
+    \item Node upgrade process implementation (Medium priority)
+    \item Generic nodes (Low priority)
+  \end{itemize}
 
+  \section{Feature: General}
 
-\section{Feature: General}
+    \subsection{Description}
 
-\subsection{Description}
+      This section describes general requirements which are not related to
+      specific features.
 
-This section describes general requirements which are not related to
-specific features.
+    \subsection{Stimulus/Response Sequences}
 
+      The simulation runs must be deterministic to allow reproduction.
 
-\subsection{Stimulus/Response Sequences}
+      As some random processes are modeled, a random number generator must be
+      initialized with a seed that is made known to the user.
 
-The simulation runs must be deterministic to allow reproduction.
+      A specific seed can also be provided by the user as part of the scenario
+      (optionally overriden via command line to simplify repeat trials of the
+      a particular scenario under randomness).
 
-As some random processes are modeled, a random number generator must be
-initialized with a seed that is made known to the user.
+    \subsection{Functional Requirements}
 
-A specific seed can also be provided by the user as part of the scenario
-(optionally overriden via command line to simplify repeat trials of the
-a particular scenario under randomness).
+      \subsubsection{BLOCKSIM-GENERAL-REQ-1 (RNG seed)}
 
+        The simulation shall initialize a random number generator (RNG)
+        with a seed provided by the user in the scenario or on the command
+        line.
 
-\subsection{Functional Requirements}
+        If no seed is provided, a seed will be generated from some local
+        machine parameters and the epoch time, and the seed will be printed
+        to allow a re-run by the user.
 
+      \subsubsection{BLOCKSIM-GENERAL-REQ-2 (termination condition)}
 
-\subsubsection{BLOCKSIM-GENERAL-REQ-1 (RNG seed)}
+        The simulation shall terminate once a block of specified height has
+        been evaluated by each node.
 
-The simulation shall initialize a random number generator (RNG) with a seed
-provided by the user in the scenario or on the command line.
+        Example: stop once all nodes have processed 10,000 blocks.
 
-If no seed is provided, a seed will be generated from some local machine
-parameters and the epoch time, and the seed will be printed to allow
-a re-run by the user.
+        Once the simulator stops, it outputs some statistics (see Output
+        feature).
 
-\subsubsection{BLOCKSIM-GENERAL-REQ-2 (termination condition)}
+        This setting shall have no default - the simulator shall abort prior
+        to starting and complain if no block height at which to stop has been
+        specified in the scenario or on the command line.
 
-The simulation shall terminate once a block of specified height has been
-evaluated by each node.
+      \subsubsection{BLOCKSIM-GENERAL-REQ-3 (accounting unit)}
 
-Example: stop once all nodes have processed 10,000 blocks.
+        Certain entities in the simulation need to account economically for
+        their actions.
 
-Once the simulator stops, it outputs some statistics (see Output feature).
+        This applies at minimum to poison block spammers, mining and service
+        nodes.
 
-This setting shall have no default - the simulator shall abort prior
-to starting and complain if no block height at which to stop has been
-specified in the scenario or on the command line.
+        For these calculations, the simulation shall use a fictional unit of
+        account: the `Sim Dollar', amounts of which are denoted in output
+        by a preceding dollar sign.
 
-\subsubsection{BLOCKSIM-GENERAL-REQ-3 (accounting unit)}
+  \section{Feature: Network}
 
-Certain entities in the simulation need to account economically for
-their actions.
+    \subsection{Description}
 
-This applies at minimum to poison block spammers, mining and service nodes.
+      The simulation requires modeling of a network layer on which
+      transactions and blocks are transported.
 
-For these calculations, the simulation shall use a fictional unit of account:
-the Sim Dollar, amounts of which are denoted in output by a preceding dollar sign.
+    \subsection{Stimulus/Response Sequences}
 
+      Traffic generators create transactions which are relayed to all nodes.
 
-\section{Feature: Network}
+      Mining nodes create blocks which are relayed to all other nodes (mining,
+      service and generic).
 
-\subsection{Description}
+      Propagation time of transactions and blocks is not modeled (at least,
+      initially).
 
-The simulation requires modeling of a network layer on which
-transactions and blocks are transported.
+      Network-splitting behavior initially accounts only for differences in
+      processing limits, instead of propagation time.
 
+      That means blocks and transactions take only the minimum amount of time
+      (1 second) to reach other entities in the simulation.
 
-\subsection{Stimulus/Response Sequences}
+    \subsection{Functional Requirements}
 
-Traffic generators create transactions which are relayed to all nodes.
+      \subsubsection{BLOCKSIM-NETWORK-REQ-1 (instantaneous transaction dissemination)}
 
-Mining nodes create blocks which are relayed to all other nodes (mining, service and generic).
+        Any transactions added to the network by traffic generators at a
+        specific time step shall be inserted into the receive queue of all
+        nodes instantaneously (at the current simulation time step).
 
-Propagation time of transactions and blocks is not modeled (at least, initially) Network-splitting behavior
-initially accounts only for differences in processing limits, instead of propagation time.
+      \subsubsection{BLOCKSIM-NETWORK-REQ-2 (instantaneous block dissemination)}
 
-That means blocks and transactions take only the minimum amount of time (1 second) to
-reach other entities in the simulation.
+        Any block added to the network by a mining node at a specific time step
+        shall be inserted into the receive queue of all other nodes
+        instantaneously (at the current simulation time step).
 
+  \section{Feature: Time}
 
-\subsection{Functional Requirements}
+    \subsection{Description}
 
+      The simulation requires modeling of time (for example w.r.t.  the
+      processing of blocks by nodes).
 
-\subsubsection{BLOCKSIM-NETWORK-REQ-1 (instantaneous transaction dissemination)}
+      Certain attributes of simulation entities such as rates of transactions
+      created by traffic generators, or processing units required by a node
+      to validate a transaction or block, may be specified most naturally in
+      terms of some units per time.
 
-Any transactions added to the network by traffic generators at a specific time step shall be inserted into the receive
-queue of all nodes instantaneously (at the current simulation time step).
+      Traffic generators will generate transactions to be inserted at a given
+      time in the simulation (which depends on each generator's
+      characteristics).
 
-\subsubsection{BLOCKSIM-NETWORK-REQ-2 (instantaneous block dissemination)}
+      Miners will stochastically generate blocks (provided they have
+      transactions in their mempool).
+      Once a miner finds a block, it adds that block onto the network immediately.
+      If a node receives two blocks at the same height, the first block to be
+      processed is worked on (if mining) or relayed (all nodes).
+      Blocks processed at the same timestep is accepted randomly with a coin
+      toss as a simplification measure.
 
-Any block added to the network by a mining node at a specific time step shall be inserted into the receive
-queue of all other nodes instantaneously (at the current simulation time step).
+    \subsection{Stimulus/Response Sequences}
 
+      At each timestep the simulator shall evaluate the production of new
+      transactions and blocks, the upgrade decisions of eligible nodes,
+      the processing of input data by active nodes and state transitions
+      of nodes which may drop out of the network.
 
+    \subsection{Functional Requirements}
 
-\section{Feature: Time}
+      \subsubsection{BLOCKSIM-TIME-REQ-1 (simulation time unit)}
 
-\subsection{Description}
+        The smallest time unit in the simulation will be one (1) second.
 
-The simulation requires modeling of time (for example w.r.t. the
-processing of blocks by nodes).
+      \subsubsection{BLOCKSIM-TIME-REQ-2 (meaning of negative/positive and zero sim times)}
 
-Certain attributes of simulation entities such as rates of transactions
-created by traffic generators, or processing units required by a node
-to validate a transaction or block, may be specified most naturally in terms
-of some units per time.
+        The starting time of the simulation will be referred to as time zero
+        (t=0), all future events will have an integer simulation time $>$ 0
+        assigned to them.
 
-Traffic generators will generate transactions to be inserted at a given time
-in the simulation (which depends on each generator's characteristics).
+        Events described in scenarios must be expressed in terms of this
+        simulation time.
 
-Miners will stochastically generate blocks (provided they have transactions
-in their mempool). Once a miner finds a block, it adds that block onto
-the network immediately. If a node receives two blocks at the same height,
-the first block to be processed is worked on (if mining) or relayed (all nodes). 
-Blocks processed at the same timestep is accepted randomly with a coin toss as a simplification 
-measure.
+        Events which occur before the simulation start (e.g. pre-existing
+        blocks which as part of initial conditions) shall have negative
+        integer simulation times assigned to them (e.g. t=-1, t=-43, etc.)
 
+  \section{Feature: Scenarios}
 
-\subsection{Stimulus/Response Sequences}
+    \subsection{Description}
 
-At each timestep the simulator shall evaluate the production of new
-transactions and blocks, the upgrade decisions of eligible nodes,
-the processing of input data by active nodes and state transitions
-of nodes which may drop out of the network.
+      A scenario completely defines all the inputs for a simulation run.
 
+      It may be specified in one single file or a collection of files (TBD),
+      but in either case there shall be one single file that acts as the
+      main starting point to provide the input data used in a simulator run.
 
-\subsection{Functional Requirements}
+      Some example scenario files can be provided with the base simulator.
 
+      Editing scenario files is outside the scope of this SRS.
+      As they will be pure text files, it can be left to the user and
+      their favorite text editor.
 
-\subsubsection{BLOCKSIM-TIME-REQ-1 (simulation time unit)}
+    \subsection{Stimulus/Response Sequences}
 
-The smallest time unit in the simulation will be one (1) second.
+      When users start the simulator, they will need to specify the (main)
+      scenario file on the command line.
 
-\subsubsection{BLOCKSIM-TIME-REQ-2 (meaning of negative/positive and zero sim times)}
+      The simulator processes the scenario file and any potential dependencies.
 
-The starting time of the simulation will be referred to as time zero
-(t=0), all future events will have an integer simulation time $>$ 0
-assigned to them.
+      If there are no errors (such as missing or invalid data), the simulation
+      will run, otherwise the simulator should exit with appropriate error
+      messages.
 
-Events described in scenarios must be expressed in terms of this
-simulation time.
+    \subsection{Functional Requirements}
 
-Events which occur before the simulation start (e.g. pre-existing blocks
-which as part of initial conditions) shall have negative integer simulation
-times assigned to them (e.g. t=-1, t=-43, etc.)
+      \subsubsection{BLOCKSIM-SCENARIO-REQ-1 (starting scenario file)}
 
+        The simulator shall read in the scenario file provided on the command
+        line and automatically process any dependencies (further included scenario
+        files).
 
+      \subsubsection{BLOCKSIM-SCENARIO-REQ-2 (abort if invalid/incomplete scenario handling)}
 
-\section{Feature: Scenarios}
+        The simulator shall abort if any required input information is missing
+        or invalid after processing the scenario file(s).
 
-\subsection{Description}
+      \subsubsection{BLOCKSIM-SCENARIO-REQ-3 (inform which data is invalid/incomplete)}
 
-A scenario completely defines all the inputs for a simulation run.
+        Any missing/invalid scenario information shall be listed to the user to
+        enable
+        them to adequately configure the scenario.
 
-It may be specified in one single file or a collection of files (TBD),
-but in either case there shall be one single file that acts as the
-main starting point to provide the input data used in a simulator run.
+      \subsubsection{BLOCKSIM-SCENARIO-REQ-4 (list of scenario data items)}
 
-Some example scenario files can be provided with the base simulator.
+        Input data items specified by scenario shall be as follows
+        (the list below should be complete):
 
-Editing scenario files is outside the scope of this SRS. As they will be pure
-text files, it can be left to the user and their favorite text editor.
+        TODO: some may be optional - need to describe better
 
+        \begin{enumerate}
+          \item Seed for RNG initialization.
+            This may be overridden by a command line parameter.
+          \item block height at which to terminate the simulation.
+            This may be overridden by a command line parameter.
+          \item Blocksize algorithm to use in nodes (this also defines the
+            `hard' max blocksize for a node)
+          \item List of pre-historical block sizes (for blocks preceding the
+            first mined block) - this can be simplified as a uniform number for x
+            blocks
+          \item Definition of the node population
+            \begin{enumerate}
+              \item Number of mining nodes
+              \item Number of service nodes
+              \item Number of generic nodes (optional - generic nodes would be
+                non-mining, non-service nodes)
+              \item Default node mempool size (in bytes)
+              \item Node interuption tolerance threshold (in seconds).
+                If the period where a node drops out exceeds a tolerance threshold,
+                the node is removed from the network permanently.
+            \end{enumerate}
+          \item Definition of the mining nodes
+          \item Definition of the service nodes
+          \item Definition of the traffic generators (these are not nodes, but
+            sources which inject transactions traffic into the simulation)
+            \begin{enumerate}
+              \item sources of `legit' transactions
+              \item sources of `spam' transactions
+            \end{enumerate}
+        \end{enumerate}
 
-\subsection{Stimulus/Response Sequences}
+  \section{Feature: Node class}
 
-When users start the simulator, they will need to specify the (main)
-scenario file on the command line.
+    \subsection{Description}
 
-The simulator processes the scenario file and any potential dependencies.
+      The node class provides the base from which all node types in the
+      system (i.e. mining, service, generic nodes) are derived.
 
-If there are no errors (such as missing or invalid data), the simulation
-will run, otherwise the simulator should exit with appropriate error messages.
+    \subsection{Stimulus/Response Sequences}
 
+      After the scenario has been read and validated, the simulator will
+      instantiate node objects of the specified types before starting the
+      simulation.
 
-\subsection{Functional Requirements}
+      Specialized node types may override some of the resource attributes
+      of the node base class.
 
+      Node objects maintain their own mempool and view of the blockchain
+      history, and receive transactions (from traffic generators) and blocks
+      (from miners) for processing.
 
-\subsubsection{BLOCKSIM-SCENARIO-REQ-1 (starting scenario file)}
+      If their resources or limits are exceeded during simulated operation,
+      nodes can become unavailable (`downtime`) and may require simulated
+      maintenance (TBD).
 
-The simulator shall read in the scenario file provided on the command line and
-automatically process any dependencies (further included scenario files).
+      The transactions in received blocks must be entered into the node's
+      mempool before the block can be processed.
 
+      Blocks that have been stuck on a Poison block for too long must be able
+      to fall back to processing another legitimate block instead.
 
-\subsubsection{BLOCKSIM-SCENARIO-REQ-2 (abort if invalid/incomplete scenario handling)}
+      Validation time of received transactions (as opposed to blocks) before
+      entering a node's mempool is not modeled explicitly.
 
-The simulator shall abort if any required input information is missing or
-invalid after processing the scenario file(s).
+    \subsection{Functional Requirements}
 
-\subsubsection{BLOCKSIM-SCENARIO-REQ-3 (inform which data is invalid/incomplete)}
-Any missing/invalid scenario information shall be listed to the user to enable
-them to adequately configure the scenario.
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-1 (node type identifier)}
 
+        Each nodes shall be identified by an attribute as one of the following
+        types:
 
-\subsubsection{BLOCKSIM-SCENARIO-REQ-4 (list of scenario data items)}
-Input data items specified by scenario shall be as follows
-(the list below should be complete):
+        \begin{itemize}
+          \item regular mining node
+          \item poison mining node
+          \item service node
+          \item generic node
+        \end{itemize}
 
-TODO: some may be optional - need to describe better
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-2 (mempool per node)}
 
-\begin{enumerate}
-   \item Seed for RNG initialization. This may be overridden by a command line parameter.
-   \item block height at which to terminate the simulation. This may be overridden by a command line parameter.
-   \item Blocksize algorithm to use in nodes (this also defines the `hard' max blocksize for a node)
-   \item List of pre-historical block sizes (for blocks preceding the first mined block) - this can be simplified as a uniform number for x blocks
-   \item Definition of the node population
+        Nodes shall maintain their own mempool containing transactions already
+        seen but not removed by a block in the node's active blockchain history.
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-3 (blockchain history per node)}
+
+        Nodes shall maintain their own history of the blockchain, as a list of
+        linked blocks which the node has been able to `validate`.
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-4 (validation rate per node)}
+
+        Nodes shall have an overrideable attribute which defines a processing
+        rate at which they are able to validate blocks.
+
+        This rate may be defined in terms of some unit (e.g. some `cycles` or
+        `ops`) used by blocks to specify their validation cost.
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-5 (maximum processable regular block size)}
+
+        Nodes shall have an overrideable attribute which defines a maximum
+        processable block size (in bytes) for regular blocks.
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-6 (maximum processable poison block size)}
+
+        Nodes shall have an overrideable attribute which defines a maximum
+        processable block size (in bytes) for poison blocks.
+        Its value must be lower than or equal the maximum size of regular blocks.
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-7 (input queue for blocks)}
+
+        Nodes shall maintain a queue for blocks received from miners but not
+        yet validated.
+
+        NOTE: This is necessary because nodes have to process the blockchain
+        sequentially, but may be receiving blocks of later from miners while
+        they are still processing earlier blocks.
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-8 (parallel validation of same-height blocks)}
+
+        Nodes shall validate received blocks in parallel according to their
+        configured validation rates and the validation cost of each block.
+
+        Such validation is subject to mempool constraints.
+
+        Once a node has validated a block at a given height, it aborts
+        validation of other candidate blocks for the same height.
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-9 (mempool space required for block validation)}
+
+        Validation is subject to mempool constraints.
+        Transactions not already received into the mempool (e.g. those in a
+        `poison block`) must be entered into node mempool before the block
+        can be validated.
+
+        NOTE: When attempting to validate a block, if mempool capacity is
+        exceeded as a result of validation, non-block transaction entries
+        will be evicted from the mempool.  The block itself will not
+        exceed mempool size (see REQ-12).
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-10 (parameter to dropout when time exceeded)}
+
+        A node's definition shall include a boolean configuration parameter
+        which controls whether it drops into maintenance if a block's
+        validation time exceeds 10 minutes.
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-11 (action if block validation $>$ 10 minutes)}
+
+        If a node is unable to process a block within a simulation time of 10
+        minutes, it shall, depending on the aforementioned  boolean configuration
+        parameter, either abort the processing of the block and carry on processing
+        alternative candidates, or drop out.
+
+        NOTE: This allows modeling a node `giving up' on a `poison block` after
+        a cut-off period, or go down entirely if the node gets stuck forever or
+        crashes on such a block.
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-12 (node mempool cap must $>$ node max blocksize)}
+
+        A node's configured mempool capacity shall exceed the configured
+        maximum blocksize that can be processed by the node, otherwise a fatal
+        misconfiguration error shall be reported and the simulation aborted.
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-13 (drop low-fee txs if full mempool)}
+
+        As long as a node's mempool is full, incoming transactions (not in
+        blocks) shall evict lower-fee transactions from the node's mempool.
+
+        NOTE: this may result in mempool desynchronization
+
+      \subsubsection{BLOCKSIM-NODE-BASE-REQ-14 (recompute cap after extending chain)}
+
+        Whenever a node has finished extending its active chain, it shall
+        invoke the scenario-specified adaptive blocksize algorithm to obtain
+        a newly computed maximum block size (`hard cap').
+
+  \section{Feature: Generic nodes}
+
+    \subsection{Description}
+
+      Generic nodes are neither mining nor economic nodes, and are modeled
+      after relay nodes which have no specific purpose.
+
+      Simulating them may not be particularly useful, but might give some
+      insight at what level of network utilization the low-spec nodes will
+      drop out.
+
+    \subsection{Stimulus/Response Sequences}
+
+      Generic nodes process incoming transactions and blocks as they are
+      produced.
+
+      They do not need revenue / cost of maintenance accounting.
+
+      The statistics tracked are inherited from the base node class.
+
+      Also, the basic node rules for processing blocks and for dropping out due
+      to exceeded mempool capacity apply.
+
+    \subsection{Functional Requirements}
+
+      \subsubsection{BLOCKSIM-NODE-GENERIC-REQ-1 (no cost/revenue for generic nodes)}
+
+        A generic node shall not be required to do any revenue / cost of
+        maintenance accounting.
+
+  \section{Feature: Mining nodes}
+
+    \subsection{Description}
+
+      Mining nodes are derived from generic nodes.
+      They inherit all the attributes and behaviors except as defined by the
+      additional functional requirements below.
+
+      The main additional capability is to produce blocks.
+
+      Two different kinds of mining nodes are modeled:
+
       \begin{enumerate}
-         \item Number of mining nodes
-         \item Number of service nodes
-         \item Number of generic nodes (optional - generic nodes would be non-mining, non-service nodes)
-         \item Default node mempool size (in bytes)
-         \item Node interuption tolerance threshold (in seconds). If the period where a node drops out exceeds a tolerance threshold, the node is removed from the network permanently.
+        \item Regular miners: they produce blocks based on their mempool which
+          is filled from `external' traffic generators.
+          They represent the `honest miners' that are not trying to harm
+          the system.
+        \item `Poison block' miners: they produce abnormal blocks filled with
+          transactions that have not been propagated over the network in the
+          regular manner.
+          Their poisonous blocks are also much more costly to validate - the
+          aim of these blocks is to harm the rest of the network.
+          An attack by a poison block miner is not expected to last more than a day.
+          A poison block miner always prefers to build on a fork chain containing his own
+          poison blocks.
       \end{enumerate}
-   \item Definition of the mining nodes
-   \item Definition of the service nodes
-   \item Definition of the traffic generators (these are not nodes, but sources which inject transactions traffic into the simulation)
-      \begin{enumerate}
-         \item sources of `legit' transactions
-         \item sources of `spam' transactions
-      \end{enumerate}
-\end{enumerate}
 
+      Regular mining nodes generate revenue by way of the fees from
+      transactions in a mined block.
+      Block rewards are ignored in the simplified model and may be added
+      later in a more sophisticated model.
 
+    \subsection{Stimulus/Response Sequences}
 
-\section{Feature: Node class}
+      As a simplification, hashpower and difficulty are not modeled, therefore
+      all mining nodes that are not `down' will have an equal chance of finding
+      the next block (hashpower of all nodes is assumed equal, and difficulty
+      is assumed such that the next block will be found on average within 10
+      minutes).
 
-\subsection{Description}
+      Regular blocks are generated every 10 minutes, uniformly, by a randomly
+      chosen regular miner.
 
-The node class provides the base from which all node types in the
-system (i.e. mining, service, generic nodes) are derived.
+      If there is a poison block miner, it injects its poison blocks into the
+      network at five-minute marks in between the regular blocks.
 
+    \subsection{Functional Requirements}
 
-\subsection{Stimulus/Response Sequences}
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-1 (regular vs poison miner)}
 
-After the scenario has been read and validated, the simulator will
-instantiate node objects of the specified types before starting the
-simulation.
+        A mining node definition shall include a mandatory parameter to denote
+        it as either a regular miner or a poison block miner.
 
-Specialized node types may override some of the resource attributes
-of the node base class.
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-2 (only one poison block miner)}
 
-Node objects maintain their own mempool and view of the blockchain history,
-and receive transactions (from traffic generators) and blocks (from miners)
-for processing.
+        At most one miner in a scenario shall be designated as a poison block
+        miner.
 
-If their resources or limits are exceeded during simulated operation, nodes
-can become unavailable (`downtime`) and may require simulated maintenance (TBD).
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-3 (regular blocks produced every 10 minutes)}
 
-The transactions in received blocks must be entered into the node's mempool
-before the block can be processed.
+        As a simplifying assumption, the regular miners shall mine one block
+        uniformly every 10 minutes.
 
-Blocks that have been stuck on a Poison block for too long must be able to
-fall back to processing another legitimate block instead.
+        i.e. the first regular block will be produced at t=600.
 
-Validation time of received transactions (as opposed to blocks) before
-entering a node's mempool is not modeled explicitly.
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-4 (random choice of regular miner producing block)}
 
-\subsection{Functional Requirements}
+        The regular miner that produces the next block shall be chosen at
+        random from the population of regular miners that are active at the
+        time the block needs to be created.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-1 (node type identifier)}
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-5 (regular mining node soft cap)}
 
-Each nodes shall be identified by an attribute as one of the following types:
+        Regular mining nodes will have a `soft cap' attribute configured by
+        default to 1/4 of the node's hard cap, and which will limit the
+        size of blocks produced by the mining node.
 
-\begin{itemize}
-   \item regular mining node
-   \item poison mining node
-   \item service node
-   \item generic node
-\end{itemize}
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-6 (meaning of zero soft cap)}
 
+        A value of zero (0) for `soft cap' parameter shall mean that a regular
+        mining node can produce blocks as big as its its hard limit.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-2 (mempool per node)}
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-7 (fill to soft cap unless zero)}
 
-Nodes shall maintain their own mempool containing transactions already seen
-but not removed by a block in the node's active blockchain history.
+        A regular mining node will attempt to fit in as many transactions
+        from its mempool as possible without exceeding its soft cap if
+        that is zero.
 
+        NOTE: a soft cap of 0 means fill to the hard cap.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-3 (blockchain history per node)}
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-8 (traffic agnostic)}
 
-Nodes shall maintain their own history of the blockchain, as a list of
-linked blocks which the node has been able to `validate`.
+        A regular mining node shall not discriminate between `legit' and `spam'
+        transactions when filling a block.
 
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-9 (minfee for mining)}
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-4 (validation rate per node)}
+        Transaction which do not carry a minimum fee rates as expected by a
+        regular mining node shall not mined by that mining node.
 
-Nodes shall have an overrideable attribute which defines a processing rate
-at which they are able to validate blocks.
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-10 (drop arriving below minfee txs)}
 
-This rate may be defined in terms of some unit (e.g. some `cycles` or `ops`)
-used by blocks to specify their validation cost.
+        Transactions that arrive outside of a mined block and carrying a fee
+        below the minfee of a mining node shall not be entered into its mempool.
 
+        For the purpose of the simulation they can be considered `dropped'.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-5 (maximum processable regular block size)}
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-11 (poison block mining parameters)}
 
-Nodes shall have an overrideable attribute which defines a maximum processable
-block size (in bytes) for regular blocks.
+        A poison block mining node definition shall include the following
+        mandatory parameters describing the poisonous blocks it produces:
 
+        \begin{itemize}
+          \item positive integer: time interval offset w.r.t to next regular
+            blocks, in seconds.  Defaults to 300s.  (5 minutes)
+          \item positive integer: height of the regular block in the simulation
+            after which production of poison blocks will commence.
+            If 0 the first poison block may be issued before the first regular block.
+            If $>$ 0 then it will be issued after the respective regular block, with an offset
+            given by the previous parameter.
+          \item positive integer in range 1..144: number of poison blocks to
+            issue (i.e. not more than a day's worth)
+          \item positive integer: validation cost per transaction in the
+            poisonous block (this can be higher than the standard cost to validate
+            transactions produced by traffic generators)
+          \item size of single poison block transaction (in bytes)
+          \item positive integer: size of poison block (in bytes).
+            The poison block is filled with as many transactions as fit into
+            this size.
+        \end{itemize}
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-6 (maximum processable poison block size)}
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-12 (regular mining revenue)}
 
-Nodes shall have an overrideable attribute which defines a maximum processable
-block size (in bytes) for poison blocks. Its value must be lower than or
-equal the maximum size of regular blocks.
+        When a regular mining node mines a block, the fees of all transactions
+        (legit and spam) in the block shall be counted as revenue for the node.
 
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-13 (regular mining cost)}
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-7 (input queue for blocks)}
+        Cost of operating a regular mining node shall be based on the
+        validation cost of blocks and transactions.
 
-Nodes shall maintain a queue for blocks received from miners but not
-yet validated.
+        TBD: precise formula
 
-NOTE: This is necessary because nodes have to process the blockchain
-sequentially, but may be receiving blocks of later from miners while they
-are still processing earlier blocks.
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-14 (poison mining revenue)}
 
+        Poison mining nodes shall not generate any revenue.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-8 (parallel validation of same-height blocks)}
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-15 (poison mining cost)}
 
-Nodes shall validate received blocks in parallel according to their
-configured validation rates and the validation cost of each block.
+        Cost of operating a poison mining node shall be based on the validation
+        cost of incoming blocks and transactions.
 
-Such validation is subject to mempool constraints.
+        TBD: precise formula (same as for BLOCKSIM-NODE-MINING-REQ-13)
 
-Once a node has validated a block at a given height, it aborts validation
-of other candidate blocks for the same height.
+  \section{Feature: Service nodes}
 
+    \subsection{Description}
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-9 (mempool space required for block validation)}
+      Service nodes are used to model economic service providers, and thus
+      are simulated with a focus on measuring cost of downtime and feasibility
+      of upgrades, similar to mining nodes, despite service nodes not
+      generating
+      any blocks.
 
-Validation is subject to mempool constraints.
-Transactions not already received into the mempool (e.g. those in a `poison block`)
-must be entered into node mempool before the block can be validated.
+      Service nodes generate revenue which is accounted, modeled as a function
+      of `legit` transactions they successfully process.
 
-NOTE: When attempting to validate a block, if mempool capacity is exceeded as a result of validation,
-non-block transaction entries will be evicted from the mempool. The block itself will not exceed mempool size
-(see REQ-12).
+      NOTE: The revenue/cost calculation formulas are elaborated in the
+      functional requirements of this feature section.
 
+      This includes both validated transactions accepted into mempool as well
+      as the transactions in blocks.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-10 (parameter to dropout when time exceeded)}
+      Service nodes also accrue maintenance costs, modeled as a function of
+      certain capacities of the node over time.
 
-A node's definition shall include a boolean configuration parameter which
-controls whether it drops into maintenance if a block's validation time exceeds 10 minutes.
+    \subsection{Stimulus/Response Sequences}
 
+      Upgrade decisions are taken before any other processing done by the node.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-11 (action if block validation $>$ 10 minutes)}
+      Then transactions queues are cleared towards the node's mempool
 
-If a node is unable to process a block within a simulation time of 10 minutes,
-it shall, depending on the aforementioned  boolean configuration parameter,
-either abort the processing of the block and carry on processing alternative
-candidates, or drop out.
+    \subsection{Functional Requirements}
 
-NOTE: This allows modeling a node `giving up' on a `poison block` after a
-cut-off period, or go down entirely if the node gets stuck forever or crashes
-on such a block.
+      \subsubsection{BLOCKSIM-NODE-SERVICE-REQ-1 (drop arriving below minfee txs)}
 
+        Transactions that arrive outside of a mined block and that carry a fee
+        below the minfee of a service node shall not be entered into its mempool.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-12 (node mempool cap must $>$ node max blocksize)}
+        For the purpose of the simulation they can be considered `dropped'.
 
-A node's configured mempool capacity shall exceed the configured
-maximum blocksize that can be processed by the node, otherwise a fatal
-misconfiguration error shall be reported and the simulation aborted.
+      \subsubsection{BLOCKSIM-NODE-SERVICE-REQ-2 (service node revenue)}
 
+        A service node shall earn revenue based on the number of legitimate
+        transactions it (a) stores in its mempool  (b) clears via blocks
+        validation.
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-13 (drop low-fee txs if full mempool)}
+        TBD: precise formula
 
-As long as a node's mempool is full, incoming transactions (not in blocks) shall
-evict lower-fee transactions from the node's mempool.
+      \subsubsection{BLOCKSIM-NODE-SERVICE-REQ-3 (service node cost)}
 
-NOTE: this may result in mempool desynchronization
+        A service node shall accrue operating cost based on its principal
+        capacities ("the more powerful the node the costlier to run").
 
-\subsubsection{BLOCKSIM-NODE-BASE-REQ-14 (recompute cap after extending chain)}
+        NOTE: The precise formula is TBD, but could look more or less like
+        this:
 
-Whenever a node has finished extending its active chain, it shall invoke
-the scenario-specified adaptive blocksize algorithm to obtain a newly
-computed maximum block size (`hard cap').
+        maintenance cost/day = C1*mempool capacity + C2*maximum validation size
+        + C3*validation speed per tx
 
+  \section{Feature: Transactions}
 
-\section{Feature: Generic nodes}
+    \subsection{Description}
 
-\subsection{Description}
+      Transactions are modeled in a simplified way, without inputs/outputs.
 
-Generic nodes are neither mining nor economic nodes, and are modeled
-after relay nodes which have no specific purpose.
+      Transactions have associated a size (in bytes), a validation cost
+      incurred during validation of a block by a node, and a fee collected
+      by the node that mines it.
 
-Simulating them may not be particularly useful, but might give some
-insight at what level of network utilization the low-spec nodes will
-drop out.
+      Two kinds of transactions will be simulated:
 
+      \begin{itemize}
+        \item `legit` transactions
+        \item `spam` transactions
+      \end{itemize}
 
-\subsection{Stimulus/Response Sequences}
+      Nodes will not distinguish between these, but they shall be distinctly
+      tagged to allow accounting of the impact of spamming on the system.
 
-Generic nodes process incoming transactions and blocks as they are
-produced.
+    \subsection{Stimulus/Response Sequences}
 
-They do not need revenue / cost of maintenance accounting.
+      Transactions are inserted onto the network by traffic generators which
+      are polled at each simulation step.
 
-The statistics tracked are inherited from the base node class.
+      They enter instantly into transaction queues of all nodes except poison
+      block miners.
 
-Also, the basic node rules for processing blocks and for dropping out due to
-exceeded mempool capacity apply.
+      Relaying of transactions is not further modeled, nodes only care about
+      them in terms of their mempool capacities and fees to collect
+      (if a regular miner).
 
+    \subsection{Functional Requirements}
 
-\subsection{Functional Requirements}
+      \subsubsection{BLOCKSIM-TRANSACTIONS-REQ-1 (tx size)}
 
-\subsubsection{BLOCKSIM-NODE-GENERIC-REQ-1 (no cost/revenue for generic nodes)}
+        A transaction shall have an associated positive size (in bytes).
 
-A generic node shall not be required to do any revenue / cost of maintenance accounting.
+      \subsubsection{BLOCKSIM-TRANSACTIONS-REQ-2 (tx fee)}
 
+        A transaction shall have an associated positive fee payable to a miner.
 
+      \subsubsection{BLOCKSIM-TRANSACTIONS-REQ-3 (tx validation cost)}
 
-\section{Feature: Mining nodes}
+        A transaction shall have an associated positive validation cost (in a
+        suitable unit e.g. cycles).
 
-\subsection{Description}
+  \section{Feature: Blocks}
 
-Mining nodes are derived from generic nodes. They inherit all the
-attributes and behaviors except as defined by the additional functional
-requirements below.
+    \subsection{Description}
 
-The main additional capability is to produce blocks.
+      The simulation will be initialized with a certain amount of "history" of
+      pseudo-blocks of negative height, of which only the size is known.
 
-Two different kinds of mining nodes are modeled:
+      The sizes of these historical blocks shall be configurable via scenario.
 
-\begin{enumerate}
-   \item Regular miners: they produce blocks based on their mempool which is filled from `external' traffic generators. They represent the `honest miners' that are not trying to harm the system.
-   \item `Poison block' miners: they produce abnormal blocks filled with transactions that have not been propagated over the network in the regular manner. Their poisonous blocks are also much more costly to validate - the aim of these blocks is to harm the rest of the network. An attack by a poison block miner is not expected to last more than a day. A poison block miner always prefers to build on a fork chain containing his own poison blocks.
-\end{enumerate}
+      Newly mined blocks are linked into a chain via a block id and a reference
+      to their parent block id.
 
-Regular mining nodes generate revenue by way of the fees from transactions
-in a mined block. Block rewards are ignored in the simplified model and may be added 
-later in a more sophisticated model.
+      No hashing needs to be performed.
 
+      Regular blocks must include a list of transactions.
 
-\subsection{Stimulus/Response Sequences}
+      Poison blocks can be represented in a simplified way which allows huge
+      blocks to be represented using less space, since their individual
+      transactions are never propagated and can thus be abstracted.
 
-As a simplification, hashpower and difficulty are not modeled, therefore
-all mining nodes that are not `down' will have an equal chance of finding
-the next block (hashpower of all nodes is assumed equal, and difficulty
-is assumed such that the next block will be found on average within 10
-minutes).
+    \subsection{Stimulus/Response Sequences}
 
-Regular blocks are generated every 10 minutes, uniformly, by a randomly chosen
-regular miner.
+      When a mining node generates a block, it links it to the tip of the chain
+      of blocks on which it is building.
 
-If there is a poison block miner, it injects its poison blocks into the network
-at five-minute marks in between the regular blocks.
+    \subsection{Functional Requirements}
 
+      \subsubsection{BLOCKSIM-BLOCKS-REQ-1 (common block structure)}
 
-\subsection{Functional Requirements}
+        A block shall have a block id of its own and a `previous block` id.
 
+      \subsubsection{BLOCKSIM-BLOCKS-REQ-2 (regular block structure)}
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-1 (regular vs poison miner)}
+        A regular block shall have an associated set of transactions.
 
-A mining node definition shall include a mandatory parameter to denote
-it as either a regular miner or a poison block miner.
+      \subsubsection{BLOCKSIM-BLOCKS-REQ-3 (poison blocks structure)}
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-2 (only one poison block miner)}
+        A poison block does not contain already propagated transactions.
+        It shall have the following attributes beyond the linking ids:
 
-At most one miner in a scenario shall be designated as a poison block
-miner.
+        \begin{enumerate}
+          \item number of transactions
+          \item size in bytes per transaction
+        \end{enumerate}
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-3 (regular blocks produced every 10 minutes)}
+        This allows to compute the block size and its impact on local
+        mempools. No fee accounting is needed as poison blocks are
+        considered as spam.
 
-As a simplifying assumption, the regular miners shall mine one block uniformly
-every 10 minutes.
+      \subsubsection{BLOCKSIM-BLOCKS-REQ-4 (configurable block prehistory)}
 
-i.e. the first regular block will be produced at t=600.
+        A list of prehistorical blocks forming a chain preceding the first
+        mined block (denoted by height 0) shall be configurable via
+        scenario file.
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-4 (random choice of regular miner producing block)}
+        NOTE: these prehistorical blocks shall have negative block heights
 
-The regular miner that produces the next block shall be chosen at random
-from the population of regular miners that are active at the time the block
-needs to be created.
+      \subsubsection{BLOCKSIM-BLOCKS-REQ-5 (only size for prehistorical blocks)}
 
+        The list of prehistorical blocks shall record only the size of each
+        such block.
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-5 (regular mining node soft cap)}
+        NOTE: the size of the prehistorical block and its position in the chain
+        (which is inferred by its position in the prehistory list) is the only
+        thing that matters to the adaptive block size algorithms under evaluation.
 
-Regular mining nodes will have a `soft cap' attribute configured by default to
-1/4 of the node's hard cap, and which will limit the size of blocks produced
-by the mining node.
+  \section{Feature: Traffic generators}
 
+    \subsection{Description}
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-6 (meaning of zero soft cap)}
+      The simulation must provide for the generation of transactions (legit and
+      spam).
 
-A value of zero (0) for `soft cap' parameter shall mean that a regular mining
-node can produce blocks as big as its its hard limit.
+      Traffic generators perform this task.
 
+    \subsection{Stimulus/Response Sequences}
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-7 (fill to soft cap unless zero)}
+      Traffic generators are polled at each simulation step to generate more
+      transactions according to their configured parameters.
 
-A regular mining node will attempt to fit in as many transactions from its mempool
-as possible without exceeding its soft cap if that is zero.
+      These transactions are entered into the mempools of all nodes that are
+      not down for maintenance.
 
-NOTE: a soft cap of 0 means fill to the hard cap.
+    \subsection{Functional Requirements}
 
+      \subsubsection{BLOCKSIM-TRAFFICGEN-REQ-1 (background level)}
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-8 (traffic agnostic)}
+        A traffic generator shall have a configurable background transaction
+        level (specified in transactions per second).
 
-A regular mining node shall not discriminate between `legit' and `spam' transactions
-when filling a block.
+        This is the base rate at which the generator emits transactions.
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-9 (minfee for mining)}
+      \subsubsection{BLOCKSIM-TRAFFICGEN-REQ-2 (spike configuration)}
 
-Transaction which do not carry a minimum fee rates as expected by a regular mining
-node shall not mined by that mining node.
+        A traffic generator definition shall allow the following optional set
+        of parameters to configure traffic spikes:
 
+        \begin{enumerate}
+          \item (initial) spike level:
+            peak rate at which the generator emits transactions,
+            specified as positive number of transactions per
+            second (value must exceed generator's background level)
+          \item spike ramp-up duration :
+            non-negative integer time in seconds to scale from background
+            to spike output level
+          \item spike sustain duration:
+            positive time in seconds to sustain the spike's peak output
+          \item spike activation interval:
+            trigger spike at these intervals (positive number of
+            seconds $>$ twice the ramp-up + sustain duration.
+            The end of the last spike is considered to be the start of a new
+            interval.
+          \item spike activation random offset:
+            non-negative integer number of seconds.
+            The actual spike is triggered a random number of seconds, up to
+            this parameter value, prior or after to the regular scheduled
+            interval trigger.
+            If the value of the random offset is zero, it means no
+            randomization around the interval happens, i.e. the spike is
+            triggered at regular intervals.
+            The value may not exceed the activation interval.
+        \end{enumerate}
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-10 (drop arriving below minfee txs)}
+        If any of these parameters are configured, they must all be configured.
+        There are no default values.
 
-Transactions that arrive outside of a mined block and carrying a fee below
-the minfee of a mining node shall not be entered into its mempool.
+      \subsubsection{BLOCKSIM-TRAFFICGEN-REQ-3 (background and spike traffic rates of increase)}
 
-For the purpose of the simulation they can be considered `dropped'.
+        A traffic generator shall have configuration parameters for the rates
+        of increase, over time, of its background and spike transaction levels.
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-11 (poison block mining parameters)}
+        These shall be non-negative real numbers value (with default values of
+        0) expressing increase in transactions per second per second.
+        The default is no increase at all.
 
-A poison block mining node definition shall include the following mandatory
-parameters describing the poisonous blocks it produces:
+        If specified, increases shall only apply to the spike peak level and
+        not the duration or any other time-related parameters.
 
-\begin{itemize}
-   \item positive integer: time interval offset w.r.t to next regular blocks, in seconds. Defaults to 300s. (5 minutes)
-   \item positive integer: height of the regular block in the simulation after which production of poison blocks will commence. If 0 the first poison block may be issued before the first regular block. If $>$ 0 then it will be issued after the respective regular block, with an offset given by the previous parameter.
-   \item positive integer in range 1..144: number of poison blocks to issue (i.e. not more than a day's worth)
-   \item positive integer: validation cost per transaction in the poisonous block (this can be higher than the standard cost to validate transactions produced by traffic generators)
-   \item positive integer: size of poison block (in bytes). The poison block is filled with as many transactions as fit into this size. (TODO: specify standard size of a transaction)
-\end{itemize}
+      \subsubsection{BLOCKSIM-TRAFFICGEN-REQ-4 (generated transaction type)}
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-12 (regular mining revenue)}
+        A traffic generator shall have a configuration parameter to
+        identify the type of transactions it generates as either `legit' or
+        `spam'.
 
-When a regular mining node mines a block, the fees of all transactions
-(legit and spam) in the block shall be counted as revenue for the node.
+        All transactions generated by an individual traffic generator shall
+        be marked as belonging to its configured transaction type.
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-13 (regular mining cost)}
+      \subsubsection{BLOCKSIM-TRAFFICGEN-REQ-5 (configure fee levels)}
 
-Cost of operating a regular mining node shall be based on the validation
-cost of blocks and transactions.
+        A traffic generator shall have a configuration parameter to
+        provide for a table of what percentage of transactions carry a certain
+        fee.
 
-TBD: precise formula
+        The fee levels on a traffic generator remain static as defined in the
+        scenario.
+        There is no requirement to modify them during the simulation.
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-14 (poison mining revenue)}
+      \subsubsection{BLOCKSIM-TRAFFICGEN-REQ-6 (generate txs according to fee levels)}
 
-Poison mining nodes shall not generate any revenue.
+        A traffic generator shall generate transactions with fees distributed
+        according to the fee levels which have been configured for it.
 
-\subsubsection{BLOCKSIM-NODE-MINING-REQ-15 (poison mining cost)}
+      \subsubsection{BLOCKSIM-TRAFFICGEN-REQ-7 (spam budget)}
 
-Cost of operating a poison mining node shall be based on the validation
-cost of incoming blocks and transactions.
+        A traffic generator which is configured to emit `spam' transactions
+        shall have a configuration parameter to specify its initial budget
+        (in Sim dollars) for transaction fees.
 
-TBD: precise formula (same as for BLOCKSIM-NODE-MINING-REQ-13)
+      \subsubsection{BLOCKSIM-TRAFFICGEN-REQ-8 (spam nodes deplete budget)}
 
+        A traffic generator which is configured to emit `spam' transactions
+        shall subtract the cost of emitted transaction fees from its available
+        spam budget.
 
-\section{Feature: Service nodes}
+        NOTE: non-spam traffic generators do not have to account for their
+        fees.
 
-\subsection{Description}
+      \subsubsection{BLOCKSIM-TRAFFICGEN-REQ-9 (configure tx size)}
 
-Service nodes are used to model economic service providers, and thus
-are simulated with a focus on measuring cost of downtime and feasibility
-of upgrades, similar to mining nodes, despite service nodes not generating
-any blocks.
+        A traffic generator shall have a configuration parameter to
+        determine the size (in bytes) of the transaction which it generates.
 
-Service nodes generate revenue which is accounted, modeled as a function of
-`legit` transactions they successfully process.
+        NOTE: A suitable default value can be programmed as 300 bytes.
 
-NOTE: The revenue/cost calculation formulas are elaborated in the functional
-requirements of this feature section.
+  \section{Feature: Node upgrades}
 
-This includes both validated transactions accepted into mempool as well as
-the transactions in blocks.
+    \subsection{Description}
 
-Service nodes also accrue maintenance costs, modeled as a function of certain
-capacities of the node over time.
+      At certain upgrade intervals, node "operators" will consider to upgrade
+      their nodes if the foresee a need and if it makes economic sense
+      (node revenue exceeds cost).
 
+    \subsection{Stimulus/Response Sequences}
 
-\subsection{Stimulus/Response Sequences}
+      If upgrades are enabled for a node, an upgrade interval timer determines
+      when the node takes the next upgrade decision.
 
-Upgrade decisions are taken before any other processing done by the node.
+      The decision to upgrade is evaluated when simulation control passes to
+      consider the node, before any other actions (e.g. processing queued
+      transactions or blocks).
 
-Then transactions queues are cleared towards the node's mempool
+    \subsection{Functional Requirements}
 
-\subsection{Functional Requirements}
+      \subsubsection{BLOCKSIM-UPGRADES-REQ-1 (upgrade interval parameter per node)}
 
-\subsubsection{BLOCKSIM-NODE-SERVICE-REQ-1 (drop arriving below minfee txs)}
+        A node shall allow an associated upgrade interval (non-negative integer
+        in seconds).
+        If the value of the parameter is 0 (zero), no upgrades shall be
+        undertaken for the node.
 
-Transactions that arrive outside of a mined block and that carry a fee below
-the minfee of a service node shall not be entered into its mempool.
+      \subsubsection{BLOCKSIM-UPGRADES-REQ-2 (node class upgrade parameters)}
 
-For the purpose of the simulation they can be considered `dropped'.
+        If no node-specific upgrade interval is specified, a node shall inherit
+        a class-wide node interval configuration parameter (i.e. a parameter
+        specifying the upgrade interval for an entire class of nodes (mining,
+        service, generic).
 
+      \subsubsection{BLOCKSIM-UPGRADES-REQ-3 (upgrade conditions)}
 
-\subsubsection{BLOCKSIM-NODE-SERVICE-REQ-2 (service node revenue)}
+        A node shall only upgrade if ALL of the following conditions are met:
 
-A service node shall earn revenue based on the number of legitimate
-transactions it (a) stores in its mempool  (b) clears via blocks validation.
+        \begin{enumerate}
+          \item number of (legit + spam transactions) as received by the node
+            has increased over a "consideration period"
+            (configurable duration in seconds)
 
-TBD: precise formula
+          \item revenue $>$ cost
 
-\subsubsection{BLOCKSIM-NODE-SERVICE-REQ-3 (service node cost)}
+          \item after the upgrade, revenue would still exceed cost
+        \end{enumerate}
 
-A service node shall accrue operating cost based on its principal
-capacities ("the more powerful the node the costlier to run").
+      \subsubsection{BLOCKSIM-UPGRADES-REQ-3 (upgrade effect)}
 
-NOTE: The precise formula is TBD, but could look more or less like this:
+        If the upgrade conditions are all met, a node shall upgrade to a
+        capacity which is estimated to be enough until the next evaluation.
 
-maintenance cost/day = C1*mempool capacity + C2*maximum validation size + C3*validation speed per tx
+        TODO: this estimation still requires fleshing out - it is presumed that
+        the upgrade feature will be implemented last and the specification will
+        be refined until then.
 
+  \section{Feature: Outputs}
 
+    \subsection{Description}
 
-\section{Feature: Transactions}
+      The simulation requires output of runtime traces (for troubleshooting or
+      self tests) and some collected and aggregated data (for user evaluation
+      of simulator scenario results).
 
-\subsection{Description}
+    \subsection{Stimulus/Response Sequences}
 
-Transactions are modeled in a simplified way, without inputs/outputs.
+      Output events are triggered
 
-Transactions have associated a size (in bytes), a validation cost incurred
-during validation of a block by a node, and a fee collected by the node that
-mines it.
+      \begin{itemize}
+        \item once the scenario has been processed but before the
+          simulation is started, but the
+        \item during the simulation (traces)
+        \item analysis results after the simulation
+      \end{itemize}
 
-Two kinds of transactions will be simulated:
+    \subsection{Functional Requirements}
 
-\begin{itemize}
-   \item `legit` transactions
-   \item `spam` transactions
-\end{itemize}
+      \subsubsection{BLOCKSIM-OUTPUTS-REQ-1 (pre simulation outputs)}
 
-Nodes will not distinguish between these, but they shall be distinctly
-tagged to allow accounting of the impact of spamming on the system.
+        Before the simulation is started, the following statistics shall be
+        output to the user:
 
+        \begin{enumerate}
+          \item Total budget of all spam-producing traffic generators
+        \end{enumerate}
 
-\subsection{Stimulus/Response Sequences}
+      \subsubsection{BLOCKSIM-OUTPUTS-REQ-2 (post simulation outputs)}
 
-Transactions are inserted onto the network by traffic generators which are
-polled at each simulation step.
+        After the simulation has concluded, the following statistics shall be
+        output
+        to the user:
 
-They enter instantly into transaction queues of all nodes except poison block
-miners.
+        \begin{enumerate}
+          \item Remaining mining nodes
+          \item Remaining service nodes
+          \item Aggregate delay for `legit' transactions: number of
+            transactions x
+            number of blocks before inclusion
+          \item Aggregate time where $>$ 50 percent of mempools are
+            desynchronized
+          \item Cost incurred by spammer
+          \item Cost incurred by Poison blockers: if block is orphaned, assume
+            the
+            entire block reward is razed for the attacker
+          \item Maximum numbers of blocks that are re-organized during the
+            simulation
+          \item Total upgrade cost
+          \item Total revenue
+        \end{enumerate}
 
-Relaying of transactions is not further modeled, nodes only care about
-them in terms of their mempool capacities and fees to collect
-(if a regular miner).
+      \subsubsection{BLOCKSIM-OUTPUTS-REQ-3 (traces)}
 
+        The simulation shall have configuration parameters to optionally
+        output detailed event traces during the simulation.
 
-\subsection{Functional Requirements}
-
-\subsubsection{BLOCKSIM-TRANSACTIONS-REQ-1 (tx size)}
-
-A transaction shall have an associated positive size (in bytes).
-
-\subsubsection{BLOCKSIM-TRANSACTIONS-REQ-2 (tx fee)}
-
-A transaction shall have an associated positive fee payable to a miner.
-
-\subsubsection{BLOCKSIM-TRANSACTIONS-REQ-3 (tx validation cost)}
-
-A transaction shall have an associated positive validation cost (in a suitable unit e.g. cycles).
-
-
-
-\section{Feature: Blocks}
-
-\subsection{Description}
-
-The simulation will be initialized with a certain amount of "history" of
-pseudo-blocks of negative height, of which only the size is known.
-
-The sizes of these historical blocks shall be configurable via scenario.
-
-Newly mined blocks are linked into a chain via a block id and a reference
-to their parent block id.
-
-No hashing needs to be performed.
-
-Regular blocks must include a list of transactions.
-
-Poison blocks can be represented in a simplified way which allows huge
-blocks to be represented using less space, since their individual
-transactions are never propagated and can thus be abstracted.
-
-
-\subsection{Stimulus/Response Sequences}
-
-When a mining node generates a block, it links it to the tip of the chain
-of blocks on which it is building.
-
-
-\subsection{Functional Requirements}
-
-\subsubsection{BLOCKSIM-BLOCKS-REQ-1 (common block structure)}
-
-A block shall have a block id of its own and a `previous block` id.
-
-
-\subsubsection{BLOCKSIM-BLOCKS-REQ-2 (regular block structure)}
-
-A regular block shall have an associated set of transactions.
-
-
-\subsubsection{BLOCKSIM-BLOCKS-REQ-3 (poison blocks structure)}
-
-A poison block does not contain already propagated transactions. It shall have the following attributes beyond the linking ids:
-
-\begin{enumerate}
-   \item number of transactions
-   \item size in bytes per transaction
-\end{enumerate}
-
-This allows to compute the block size and its impact on local mempools
-as well as accounting.
-
-\subsubsection{BLOCKSIM-BLOCKS-REQ-4 (configurable block prehistory)}
-
-A list of prehistorical blocks forming a chain preceding the first mined
-block (denoted by height 0) shall be configurable via scenario file.
-
-NOTE: these prehistorical blocks shall have negative block heights
-
-\subsubsection{BLOCKSIM-BLOCKS-REQ-5 (only size for prehistorical blocks)}
-
-The list of prehistorical blocks shall record only the size of each such
-block.
-
-NOTE: the size of the prehistorical block and its position in the chain
-(which is inferred by its position in the prehistory list) is the only thing
-that matters to the adaptive block size algorithms under evaluation.
-
-
-\section{Feature: Traffic generators}
-
-\subsection{Description}
-
-The simulation must provide for the generation of transactions (legit and spam).
-
-Traffic generators perform this task.
-
-
-\subsection{Stimulus/Response Sequences}
-
-Traffic generators are polled at each simulation step to generate more
-transactions according to their configured parameters.
-
-These transactions are entered into the mempools of all nodes that are not
-down for maintenance.
-
-
-\subsection{Functional Requirements}
-
-\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-1 (background level)}
-
-A traffic generator shall have a configurable background transaction level
-(specified in transactions per second).
-
-This is the base rate at which the generator emits transactions.
-
-\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-2 (spike configuration)}
-
-A traffic generator definition shall allow the following optional set of parameters to configure
-traffic spikes:
-
-\begin{enumerate}
-   \item (initial) spike level: peak rate at which the generator emits transactions, specified as positive number of transactions per second (value must exceed generator's background level)
-   \item spike ramp-up duration : non-negative integer time in seconds to scale from background to spike output level
-   \item spike sustain duration: positive time in seconds to sustain the spike's peak output
-   \item spike activation interval: trigger spike at these intervals (positive number of seconds $>$ twice the ramp-up + sustain duration. The end of the last spike is considered to be the start of a new interval.
-   \item spike activation random offset: non-negative integer number of seconds. The actual spike is triggered a random number of seconds, up to this parameter value, prior or after to the regular scheduled interval trigger. If the value of the random offset is zero, it means no randomization around the interval happens, i.e. the spike is triggered at regular intervals. The value may not exceed the activation interval.
-\end{enumerate}
-
-If any of these parameters are configured, they must all be configured.
-There are no default values.
-
-
-\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-3 (background and spike traffic rates of increase)}
-
-A traffic generator shall have configuration parameters for the rates
-of increase, over time, of its background and spike transaction levels.
-
-These shall be non-negative real numbers value (with default values of 0)
-expressing increase in transactions per second per second. The default
-is no increase at all.
-
-If specified, increases shall only apply to the spike peak level and not the
-duration or any other time-related parameters.
-
-
-\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-4 (generated transaction type)}
-
-A traffic generator shall have a configuration parameter to
-identify the type of transactions it generates as either `legit' or `spam'.
-
-All transactions generated by an individual traffic generator shall
-be marked as belonging to its configured transaction type.
-
-
-\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-5 (configure fee levels)}
-
-A traffic generator shall have a configuration parameter to
-provide for a table of what percentage of transactions carry a certain fee.
-
-The fee levels on a traffic generator remain static as defined in the scenario.
-There is no requirement to modify them during the simulation.
-
-
-\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-6 (generate txs according to fee levels)}
-
-A traffic generator shall generate transactions with fees distributed
-according to the fee levels which have been configured for it.
-
-
-\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-7 (spam budget)}
-
-A traffic generator which is configured to emit `spam' transactions
-shall have a configuration parameter to specify its initial budget
-(in Sim dollars) for transaction fees.
-
-
-\subsubsection{BLOCKSIM-TRAFFICGEN-REQ-8 (spam nodes deplete budget)}
-
-A traffic generator which is configured to emit `spam' transactions
-shall subtract the cost of emitted transaction fees from its available
-spam budget.
-
-NOTE: non-spam traffic generators do not have to account for their fees.
-
-
-
-
-\section{Feature: Node upgrades}
-
-\subsection{Description}
-
-At certain upgrade intervals, node "operators" will consider to upgrade
-their nodes if the foresee a need and if it makes economic sense
-(node revenue exceeds cost).
-
-
-\subsection{Stimulus/Response Sequences}
-
-If upgrades are enabled for a node, an upgrade interval timer determines
-when the node takes the next upgrade decision.
-
-The decision to upgrade is evaluated when simulation control passes to
-consider the node, before any other actions (e.g. processing queued
-transactions or blocks).
-
-
-\subsection{Functional Requirements}
-
-\subsubsection{BLOCKSIM-UPGRADES-REQ-1 (upgrade interval parameter per node)}
-
-A node shall allow an associated upgrade interval (non-negative integer in seconds).
-If the value of the parameter is 0 (zero), no upgrades shall be undertaken
-for the node.
-
-\subsubsection{BLOCKSIM-UPGRADES-REQ-2 (node class upgrade parameters)}
-
-If no node-specific upgrade interval is specified, a node shall inherit
-a class-wide node interval configuration parameter (i.e. a parameter
-specifying the upgrade interval for an entire class of nodes (mining,
-service, generic).
-
-\subsubsection{BLOCKSIM-UPGRADES-REQ-3 (upgrade conditions)}
-
-A node shall only upgrade if ALL of the following conditions are met:
-
-\begin{enumerate}
-   \item number of (legit + spam transactions) as received by the node has increased
-over a "consideration period" (configurable duration in seconds)
-
-   \item revenue $>$ cost
-
-   \item after the upgrade, revenue would still exceed cost
-\end{enumerate}
-
-
-\subsubsection{BLOCKSIM-UPGRADES-REQ-3 (upgrade effect)}
-If the upgrade conditions are all met, a node shall upgrade to a capacity
-which is estimated to be enough until the next evaluation.
-
-TODO: this estimation still requires fleshing out - it is presumed that
-the upgrade feature will be implemented last and the specification will
-be refined until then.
-
-
-
-\section{Feature: Outputs}
-
-\subsection{Description}
-
-The simulation requires output of runtime traces (for troubleshooting or
-self tests) and some collected and aggregated data (for user evaluation of
-simulator scenario results).
-
-
-\subsection{Stimulus/Response Sequences}
-
-Some of the output events are triggered during the simulation, but the
-main output
-
-
-\subsection{Functional Requirements}
-
-
-\subsubsection{BLOCKSIM-OUTPUTS-REQ-1 (pre simulation outputs)}
-
-Before the simulation is started, the following statistics shall be output
-to the user:
-
-\begin{enumerate}
-   \item Total budget of all spam-producing traffic generators
-\end{enumerate}
-
-
-\subsubsection{BLOCKSIM-OUTPUTS-REQ-2 (post simulation outputs)}
-
-After the simulation has concluded, the following statistics shall be output
-to the user:
-
-\begin{enumerate}
-   \item Remaining mining nodes
-   \item Remaining service nodes
-   \item Aggregate delay for `legit' transactions: number of transactions x number of blocks before inclusion
-   \item Aggregate time where $>$ 50 percent of mempools are desynchronized
-   \item Cost incurred by spammer
-   \item Cost incurred by Poison blockers: if block is orphaned, assume the entire block reward is razed for the attacker
-   \item Maximum numbers of blocks that are re-organized during the simulation
-   \item Total upgrade cost
-   \item Total revenue
-\end{enumerate}
-
+        NOTE: traces are to help in checking that the simulation processes
+        function as intended.
 
 \chapter{Other Non-functional Requirements}
 
-\section{Performance Requirements}
-TBD
+  \section{Performance Requirements}
 
-Should be described in terms of feasible network sizes of interest (up to 2000 nodes?),
-realistic mempool capacity distributions, transaction generation rates and simulation
-time ranges possible on a reasonably modern multi-core PC with disk and memory specs,
-available to COTS hardware.
+    TBD
 
+    Should be described in terms of feasible network sizes of interest (up to
+    2000 nodes?), realistic mempool capacity distributions,
+    transaction generation rates and simulation time ranges possible on a
+    reasonably modern multi-core PC with disk and memory specs,
+    available to COTS hardware.
 
-\section{Safety Requirements}
-None.
+  \section{Safety Requirements}
 
-\section{Security Requirements}
-None.
+    None.
 
-\section{Software Quality Attributes}
-It is important the simulator be easily configurable and adaptable.
+  \section{Security Requirements}
 
-Python is recommended as it is widely available across platforms and supported
-by common development environments.
+    None.
 
-Most Bitcoin Cash developers would be able to do the Python programming needed
-to implement further blocksize algorithms for testing, and even enhancements
-to the simulator.
+  \section{Software Quality Attributes}
 
-Python provides good libraries and unit testing facilities, and also modules
-for a possible GUI that could be constructed to make handling the simulator
-easier in future.
+    It is important the simulator be easily configurable and adaptable.
 
+    Python is recommended as it is widely available across platforms and
+    supported by common development environments.
 
-\section{Business Rules}
-None.
+    Most Bitcoin Cash developers would be able to do the Python programming
+    needed to implement further blocksize algorithms for testing, and even
+    enhancements to the simulator.
 
+    Python provides good libraries and unit testing facilities, and also
+    modules for a possible GUI that could be constructed to make handling
+    the simulator easier in future.
+
+  \section{Business Rules}
+
+    None.
 
 \chapter{Other Requirements}
-None / TBD.
 
-\section{Appendix A: Glossary}
-%see https://en.wikibooks.org/wiki/LaTeX/Glossary
-$<$Define all the terms necessary to properly interpret the SRS, including
-acronyms and abbreviations. You may wish to build a separate glossary that spans
-multiple projects or the entire organization, and just include terms specific to
-a single project in each SRS.$>$
+  None / TBD.
 
-\section{Appendix B: Analysis Models}
-$<$Optionally, include any pertinent analysis models, such as data flow
-diagrams, class diagrams, state-transition diagrams, or entity-relationship
-diagrams.$>$
+  \section{Appendix A: Glossary}
 
-\section{Appendix C: To Be Determined List}
-$<$Collect a numbered list of the TBD (to be determined) references that remain
-in the SRS so they can be tracked to closure.$>$
+    %see https://en.wikibooks.org/wiki/LaTeX/Glossary
+    $<$Define all the terms necessary to properly interpret the SRS, including
+    acronyms and abbreviations.
+    You may wish to build a separate glossary that spans multiple projects
+    or the entire organization, and just include terms specific to
+    a single project in each SRS.$>$
 
-\section{Appendix D: To Do List}
-This is reserved for a list of changes that still need to be taken into account in
-future iterations of this specification.
+  \section{Appendix B: Analysis Models}
 
+    $<$Optionally, include any pertinent analysis models, such as data flow
+    diagrams, class diagrams, state-transition diagrams, or entity-relationship
+    diagrams.$>$
 
+  \section{Appendix C: To Be Determined List}
 
+    $<$Collect a numbered list of the TBD (to be determined) references that
+    remain in the SRS so they can be tracked to closure.$>$
+
+  \section{Appendix D: To Do List}
+
+    This is reserved for a list of changes that still need to be taken into
+    account in future iterations of this specification.
 
 \end{document}
