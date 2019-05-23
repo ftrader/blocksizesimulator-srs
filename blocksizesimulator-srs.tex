@@ -350,6 +350,20 @@
         account: the `Sim Dollar', amounts of which are denoted in output
         by a preceding dollar sign.
 
+      \subsubsection{BLOCKSIM-GENERAL-REQ-4 (default block reward profit)}
+
+        As a simplified model of block rewards, there shall be a default
+        value of `block reward profit' which is the amount that is added
+        as revenue to any mining node when it produces (`finds') a block.
+
+        This models the coinbase rewards that are afforded to nodes in
+        a Bitcoin network.
+
+        TBD: a suitable default value
+
+        NOTE: Mining nodes may override this block reward profit parameter
+        in their own definitions.
+
   \section{Feature: Network}
 
     \subsection{Description}
@@ -498,8 +512,10 @@
           \item Blocksize algorithm to use in nodes (this also defines the
             `hard' max blocksize for a node)
           \item List of pre-historical block sizes (for blocks preceding the
-            first mined block) - this can be simplified as a uniform number for x
+            first mined block) - this can be simplified as a uniform number for X
             blocks
+          \item Default transaction sizes (regular and poison)
+          \item Default block reward profit
           \item Definition of the node population
             \begin{enumerate}
               \item Number of mining nodes
@@ -722,9 +738,8 @@
       \end{enumerate}
 
       Regular mining nodes generate revenue by way of the fees from
-      transactions in a mined block.
-      Block rewards are ignored in the simplified model and may be added
-      later in a more sophisticated model.
+      transactions in a mined block, as well as a simplified form of
+      block reward profits.
 
     \subsection{Stimulus/Response Sequences}
 
@@ -827,8 +842,14 @@
 
       \subsubsection{BLOCKSIM-NODE-MINING-REQ-12 (regular mining revenue)}
 
-        When a regular mining node mines a block, the fees of all transactions
-        (legit and spam) in the block shall be counted as revenue for the node.
+        When a regular mining node mines a block, the following shall be
+        added to the revenue of the node:
+
+        \begin{enumerate}
+          \item the fees of all transactions (legit and spam) in the block
+          \item the "block reward profit" (a simplification of
+            block rewards) shall added to the node's revenue
+        \end{enumerate}
 
       \subsubsection{BLOCKSIM-NODE-MINING-REQ-13 (regular mining cost)}
 
@@ -847,6 +868,12 @@
         cost of incoming blocks and transactions.
 
         TBD: precise formula (same as for BLOCKSIM-NODE-MINING-REQ-13)
+
+      \subsubsection{BLOCKSIM-NODE-MINING-REQ-16 (node block reward profit)}
+
+        The `block reward profit' (a simplified model of block rewards) shall
+        be configurable per node, overriding a default value that is set
+        in BLOCKSIM-GENERAL-REQ-4.
 
   \section{Feature: Service nodes}
 
