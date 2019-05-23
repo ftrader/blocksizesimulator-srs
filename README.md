@@ -1,7 +1,20 @@
-(Work in progress)
+(Work in progress - see comments below)
 
 This is a Software Requirement Specification for a simulator to
 assess dynamic blocksize algorithms on Bitcoin Cash.
+
+This specification is still in draft and expected to undergo further
+changes. Feedback is welcomed - you can raise issues or submit pull
+requests on this repository.
+
+A Python implementation development is kicked off about the time this
+repository was made public (23 May 2019), and will be opened once it
+is usable in alpha state.
+
+A public slack for those who wish to discuss this specification or its
+implementation(s) may be announced shortly.
+
+## Building
 
 To build PDF from .tex on Debian:
 
