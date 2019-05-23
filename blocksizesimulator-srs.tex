@@ -25,17 +25,21 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \hypersetup{
-    bookmarks=false,    % show bookmarks bar?
-    pdftitle={Adjustable Blocksize Limit Scenario Simulator SRS},    % title
-    pdfauthor={various},                     % author
-    pdfsubject={Software Requirements Specification},                % subject of the document
-    pdfkeywords={Bitcoin, simulator, blocksize, adaptive, dynamic, requirements}, % list of keywords
-    colorlinks=true,       % false: boxed links; true: colored links
+    bookmarks=false,      % show bookmarks bar?
+                          % title
+    pdftitle={Adjustable Blocksize Limit Scenario Simulator SRS},
+    pdfauthor={various},  % author
+                          % subject of the document
+    pdfsubject={Software Requirements Specification},
+                          % list of keywords
+    pdfkeywords={Bitcoin, simulator, blocksize, adaptive, dynamic,
+                 software, requirements, SRS},
+    colorlinks=true,      % false: boxed links; true: colored links
     linkcolor=blue,       % color of internal links
-    citecolor=black,       % color of links to bibliography
-    filecolor=black,        % color of file links
-    urlcolor=purple,        % color of external links
-    linktoc=page            % only page is linked
+    citecolor=black,      % color of links to bibliography
+    filecolor=black,      % color of file links
+    urlcolor=purple,      % color of external links
+    linktoc=page          % only page is linked
 }%
 \def\myversion{0.1.2 }
 \date{}
@@ -72,13 +76,13 @@
         \hline
 	    Name & Date & Reason For Changes & Version\\
         \hline
-	    imaginary_username & 2019-05-12 & initial text requirements & n/a\\
+	    imaginary\_username & 2019-05-12 & initial text requirements & n/a\\
         \hline
 	    freetrader & 2019-05-22 & initial SRS draft & 0.1\\
         \hline
-	    imaginary_username & 2019-05-23 & small clarifications & 0.1.1 \\
+	    imaginary\_username & 2019-05-23 & small clarifications & 0.1.1 \\
         \hline
-	    freetrader & 2019-05-23 & format, PDF info updates & 0.1.2 \\
+	    freetrader & 2019-05-23 & formatting, metadata & 0.1.2 \\
         \hline
     \end{tabular}
 \end{center}
@@ -135,7 +139,7 @@ intended to provide information on the following observables:
 
 \section{References}
 \begin{itemize}
-   \item text file with rough requirements ompiled by imaginary_username
+   \item text file with rough requirements ompiled by imaginary\_username
    \item private Slack discussion notes with clarification of rough requirements
    \item Asymmetric Moving Maxblocksize Based On Median
 
@@ -1028,8 +1032,8 @@ traffic spikes:
    \item (initial) spike level: peak rate at which the generator emits transactions, specified as positive number of transactions per second (value must exceed generator's background level)
    \item spike ramp-up duration : non-negative integer time in seconds to scale from background to spike output level
    \item spike sustain duration: positive time in seconds to sustain the spike's peak output
-   \item spike spike activation interval: trigger spike at these intervals (positive number of seconds $>$ twice the ramp-up + sustain duration. The end of the last spike is considered to be the start of a new interval.
-   \item spike spike activation random offset: non-negative integer number of seconds. The actual spike is triggered a random number of seconds, up to this parameter value, prior or after to the regular scheduled interval trigger. If the value of the random offset is zero, it means no randomization around the interval happens, i.e. the spike is triggered at regular intervals. The value may not exceed the activation interval.
+   \item spike activation interval: trigger spike at these intervals (positive number of seconds $>$ twice the ramp-up + sustain duration. The end of the last spike is considered to be the start of a new interval.
+   \item spike activation random offset: non-negative integer number of seconds. The actual spike is triggered a random number of seconds, up to this parameter value, prior or after to the regular scheduled interval trigger. If the value of the random offset is zero, it means no randomization around the interval happens, i.e. the spike is triggered at regular intervals. The value may not exceed the activation interval.
 \end{enumerate}
 
 If any of these parameters are configured, they must all be configured.
